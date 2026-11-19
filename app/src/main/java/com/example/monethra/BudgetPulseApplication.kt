@@ -1,7 +1,7 @@
 package com.example.monethra
 
 import android.app.Application
-import com.example.monethra.data.database.MonethraDatabase
+import com.example.monethra.data.database.BudgetPulseDatabase
 import com.example.monethra.data.datastore.UserPreferencesRepository
 import com.example.monethra.data.datastore.UserPreferencesRepositoryImpl
 import com.example.monethra.data.repository.AuthRepository
@@ -11,9 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MonethraApplication : Application() {
+class BudgetPulseApplication : Application() {
 
-    lateinit var database: MonethraDatabase
+    lateinit var database: BudgetPulseDatabase
         private set
 
     lateinit var userPreferencesRepository: UserPreferencesRepository
@@ -35,7 +35,7 @@ class MonethraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        database = MonethraDatabase.getDatabase(this)
+        database = BudgetPulseDatabase.getDatabase(this)
         userPreferencesRepository = UserPreferencesRepositoryImpl(this)
         currencyRepository = CurrencyRepository(
             customCurrencyDao = database.customCurrencyDao(),
@@ -60,3 +60,6 @@ class MonethraApplication : Application() {
         }
     }
 }
+
+// Backward-compatibility alias
+typealias MonethraApplication = BudgetPulseApplication

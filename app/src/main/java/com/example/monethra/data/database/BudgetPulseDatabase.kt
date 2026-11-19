@@ -28,7 +28,7 @@ import com.example.monethra.data.entity.UserEntity
     version = 5,
     exportSchema = false,
 )
-abstract class MonethraDatabase : RoomDatabase() {
+abstract class BudgetPulseDatabase : RoomDatabase() {
 
     abstract fun transactionDao(): TransactionDao
     abstract fun budgetDao(): BudgetDao
@@ -38,7 +38,7 @@ abstract class MonethraDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: MonethraDatabase? = null
+        private var INSTANCE: BudgetPulseDatabase? = null
 
         val MIGRATION_1_5 = object : Migration(1, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -78,11 +78,11 @@ abstract class MonethraDatabase : RoomDatabase() {
             )
         }
 
-        fun getDatabase(context: Context): MonethraDatabase {
+        fun getDatabase(context: Context): BudgetPulseDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    MonethraDatabase::class.java,
+                    BudgetPulseDatabase::class.java,
                     "monethra_db",
                 )
                     .addMigrations(MIGRATION_1_5, MIGRATION_2_5, MIGRATION_3_5, MIGRATION_4_5)
@@ -95,3 +95,6 @@ abstract class MonethraDatabase : RoomDatabase() {
         }
     }
 }
+
+// Backward-compatibility alias
+typealias MonethraDatabase = BudgetPulseDatabase

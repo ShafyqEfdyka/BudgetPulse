@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
  * blending Ivory White (#F4F0E0) and tonal shades in Light Mode,
  * and Smoky Black (#100C08) and tonal shades in Dark Mode.
  */
-object MonethraPastelPalette {
+object BudgetPulsePastelPalette {
     val SmokyBlack = Color(0xFF100C08)
     val IvoryWhite = Color(0xFFF4F0E0)
     val WarmCream = Color(0xFFEBE5CE)
@@ -63,13 +63,14 @@ object MonethraPastelPalette {
     fun getRandomThreeColorGradient(darkTheme: Boolean = false): Brush = getMonochromeLinearGradient(darkTheme)
 }
 
-typealias BudgetPulseMonochromePalette = MonethraPastelPalette
+typealias BudgetPulseMonochromePalette = BudgetPulsePastelPalette
+typealias MonethraPastelPalette = BudgetPulsePastelPalette
 
 @Composable
 fun rememberMonochromeBackgroundGradient(
     darkTheme: Boolean = MaterialTheme.colorScheme.background == Color(0xFF100C08),
 ): Brush {
     return remember(darkTheme) {
-        MonethraPastelPalette.getMonochromeLinearGradient(darkTheme)
+        BudgetPulsePastelPalette.getMonochromeLinearGradient(darkTheme)
     }
 }
