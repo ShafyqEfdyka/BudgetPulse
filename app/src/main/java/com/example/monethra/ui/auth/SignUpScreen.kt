@@ -1,5 +1,6 @@
 package com.example.monethra.ui.auth
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,20 +31,29 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -55,11 +65,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.monethra.R
-import com.example.monethra.ui.theme.DeepIndigo
-import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.MonethraPastelPalette
-import com.example.monethra.ui.theme.MonethraTheme
-import com.example.monethra.ui.theme.PastelPeriwinkle
+import com.example.monethra.ui.theme.BudgetPulseTheme
+import com.example.monethra.ui.theme.rememberMonochromeBackgroundGradient
 import com.example.monethra.viewmodel.AuthViewModel
 import com.example.monethra.viewmodel.SignUpUiState
 
@@ -68,7 +75,8 @@ fun SignUpScreen(
     viewModel: AuthViewModel,
     onSignUpSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundBrush: Brush? = null,
 ) {
     val signUpState by viewModel.signUpState.collectAsState()
 
@@ -82,7 +90,8 @@ fun SignUpScreen(
         onToggleConfirmPasswordVisibility = viewModel::toggleSignUpConfirmPasswordVisibility,
         onSignUpClick = { viewModel.signUp(onSuccess = onSignUpSuccess) },
         onNavigateToLogin = onNavigateToLogin,
-        modifier = modifier
+        modifier = modifier,
+        backgroundBrush = backgroundBrush,
     )
 }
 
@@ -97,22 +106,45 @@ fun SignUpContent(
     onToggleConfirmPasswordVisibility: () -> Unit,
     onSignUpClick: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundBrush: Brush? = null,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val displayError = state.errorMessage ?: state.generalError
-    val backgroundBrush = remember { MonethraPastelPalette.getRandomThreeColorGradient() }
+    val effectiveBackgroundBrush = backgroundBrush ?: rememberMonochromeBackgroundGradient()
+
+    LaunchedEffect(displayError) {
+        if (!displayError.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(displayError)
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                CompositionLocalProvider(
+                    LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.inverseOnSurface),
+                ) {
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = MaterialTheme.colorScheme.inverseSurface,
+                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        actionColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                }
+            }
+        },
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = backgroundBrush)
+                .background(brush = effectiveBackgroundBrush)
                 .padding(innerPadding)
                 .imePadding(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Column(
                 modifier = Modifier
@@ -120,13 +152,14 @@ fun SignUpContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 // Header Logo
                 Image(
-                    painter = painterResource(id = R.drawable.app_logo),
-                    contentDescription = "MONETHRA Logo",
-                    modifier = Modifier.size(80.dp)
+                    painter = painterResource(id = R.drawable.logo_no_bg),
+                    contentDescription = "BudgetPulse Logo",
+                    modifier = Modifier.size(80.dp),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -135,36 +168,37 @@ fun SignUpContent(
                     text = "Create Account",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DeepIndigo,
-                    letterSpacing = 0.5.sp
+                    color = MaterialTheme.colorScheme.onBackground,
+                    letterSpacing = 0.5.sp,
                 )
 
                 Text(
                     text = "Start managing your finances today",
                     fontSize = 14.sp,
-                    color = Color(0xFF4B5563),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 20.dp)
+                    modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
                 )
 
-                // Elevated Semi-Translucent Card Container
+                // Elevated Monochrome Card Container
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(
-                            elevation = 12.dp,
+                            elevation = 8.dp,
                             shape = RoundedCornerShape(24.dp),
-                            ambientColor = DeepIndigo.copy(alpha = 0.15f),
-                            spotColor = DeepIndigo.copy(alpha = 0.2f)
+                            ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                         ),
                     shape = RoundedCornerShape(24.dp),
-                    color = Color.White.copy(alpha = 0.94f)
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         // Error message
                         if (!displayError.isNullOrBlank()) {
@@ -172,15 +206,18 @@ fun SignUpContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 16.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE8E8)),
-                                shape = RoundedCornerShape(12.dp)
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f)),
+                                shape = RoundedCornerShape(12.dp),
                             ) {
                                 Text(
                                     text = displayError,
-                                    color = ExpenseRed,
+                                    color = MaterialTheme.colorScheme.error,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(12.dp)
+                                    modifier = Modifier.padding(12.dp),
                                 )
                             }
                         }
@@ -189,26 +226,26 @@ fun SignUpContent(
                         OutlinedTextField(
                             value = state.fullName,
                             onValueChange = onFullNameChanged,
-                            label = { Text("Full Name", color = DeepIndigo) },
+                            label = { Text("Full Name", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Person,
                                     contentDescription = "Person Icon",
-                                    tint = DeepIndigo
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             isError = state.fullNameError != null,
-                            supportingText = state.fullNameError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.fullNameError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -217,29 +254,29 @@ fun SignUpContent(
                         OutlinedTextField(
                             value = state.email,
                             onValueChange = onEmailChanged,
-                            label = { Text("Email Address", color = DeepIndigo) },
+                            label = { Text("Email Address", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Email,
                                     contentDescription = "Email Icon",
-                                    tint = DeepIndigo
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             isError = state.emailError != null,
-                            supportingText = state.emailError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.emailError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
                             ),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -248,12 +285,12 @@ fun SignUpContent(
                         OutlinedTextField(
                             value = state.password,
                             onValueChange = onPasswordChanged,
-                            label = { Text("Password", color = DeepIndigo) },
+                            label = { Text("Password", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Lock,
                                     contentDescription = "Password Icon",
-                                    tint = DeepIndigo
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             trailingIcon = {
@@ -261,26 +298,26 @@ fun SignUpContent(
                                     Icon(
                                         imageVector = if (state.isPasswordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
                                         contentDescription = if (state.isPasswordVisible) "Hide password" else "Show password",
-                                        tint = DeepIndigo
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
                             },
                             visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             isError = state.passwordError != null,
-                            supportingText = state.passwordError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.passwordError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
                             ),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -289,12 +326,12 @@ fun SignUpContent(
                         OutlinedTextField(
                             value = state.confirmPassword,
                             onValueChange = onConfirmPasswordChanged,
-                            label = { Text("Confirm Password", color = DeepIndigo) },
+                            label = { Text("Confirm Password", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Lock,
                                     contentDescription = "Confirm Password Icon",
-                                    tint = DeepIndigo
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             trailingIcon = {
@@ -302,26 +339,26 @@ fun SignUpContent(
                                     Icon(
                                         imageVector = if (state.isConfirmPasswordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
                                         contentDescription = if (state.isConfirmPasswordVisible) "Hide password" else "Show password",
-                                        tint = DeepIndigo
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
                             },
                             visualTransformation = if (state.isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             isError = state.confirmPasswordError != null,
-                            supportingText = state.confirmPasswordError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.confirmPasswordError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Done,
                             ),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -335,22 +372,22 @@ fun SignUpContent(
                                 .height(52.dp),
                             shape = RoundedCornerShape(26.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = DeepIndigo,
-                                contentColor = Color.White
-                            )
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
                         ) {
                             if (state.isLoading) {
                                 CircularProgressIndicator(
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     strokeWidth = 2.dp,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(24.dp),
                                 )
                             } else {
                                 Text(
                                     text = "Sign Up",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
                                 )
                             }
                         }
@@ -360,19 +397,19 @@ fun SignUpContent(
                         // Link to Login
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             Text(
                                 text = "Already have an account?",
                                 fontSize = 14.sp,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             TextButton(onClick = onNavigateToLogin) {
                                 Text(
                                     text = "Log In",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = DeepIndigo
+                                    color = MaterialTheme.colorScheme.primary,
                                 )
                             }
                         }
@@ -386,9 +423,9 @@ fun SignUpContent(
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    MonethraTheme {
+    BudgetPulseTheme {
         SignUpContent(
-            state = SignUpUiState(),
+            state = SignUpUiState(fullName = "User"),
             onFullNameChanged = {},
             onEmailChanged = {},
             onPasswordChanged = {},
@@ -396,7 +433,7 @@ fun SignUpScreenPreview() {
             onTogglePasswordVisibility = {},
             onToggleConfirmPasswordVisibility = {},
             onSignUpClick = {},
-            onNavigateToLogin = {}
+            onNavigateToLogin = {},
         )
     }
 }

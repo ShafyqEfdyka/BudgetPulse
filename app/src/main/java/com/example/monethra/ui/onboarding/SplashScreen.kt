@@ -10,36 +10,31 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import com.example.monethra.MonethraApplication
 import com.example.monethra.R
 import com.example.monethra.data.repository.AuthRepository
 import com.example.monethra.data.session.SessionManager
-import com.example.monethra.ui.theme.MonethraPastelPalette
+import com.example.monethra.ui.theme.rememberMonochromeBackgroundGradient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -49,7 +44,7 @@ import kotlin.math.hypot
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-    backgroundBrush: Brush = remember { MonethraPastelPalette.getRandomThreeColorGradient() },
+    backgroundBrush: Brush? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null,
     onNavigateToOnboarding: () -> Unit = {},
@@ -64,30 +59,12 @@ fun SplashScreen(
     // Circular reveal progress: expands radially from 0f to 1f from the center behind the logo
     val revealProgress = remember { Animatable(0f) }
 
-    // Wordmark entrance animation drivers
-    val wordmarkAlpha = remember { Animatable(0f) }
-    val wordmarkOffsetY = remember { Animatable(12f) }
-
     LaunchedEffect(Unit) {
-        // Expand the 3-color pastel gradient circularly outward from behind the moth logo over 380ms
+        // Expand the ivory tonal gradient circularly outward from behind the BP logo over 380ms
         launch {
             revealProgress.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 380, easing = FastOutSlowInEasing),
-            )
-        }
-
-        // Smoothly fade and slide the bottom "monethra" wordmark upward with slight delay
-        launch {
-            wordmarkAlpha.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 280, delayMillis = 120, easing = FastOutSlowInEasing),
-            )
-        }
-        launch {
-            wordmarkOffsetY.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(durationMillis = 280, delayMillis = 120, easing = FastOutSlowInEasing),
             )
         }
 
@@ -128,12 +105,14 @@ fun SplashScreen(
         }
     }
 
+    val effectiveBackgroundBrush = backgroundBrush ?: rememberMonochromeBackgroundGradient()
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFEAE6F8)),
+            .background(MaterialTheme.colorScheme.background),
     ) {
-        // Gradient layer that blooms circularly outward from behind the center moth logo
+        // Gradient layer that blooms circularly outward from behind the center BP logo
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -155,20 +134,20 @@ fun SplashScreen(
                         this@drawWithContent.drawContent()
                     }
                 }
-                .background(brush = backgroundBrush),
+                .background(brush = effectiveBackgroundBrush),
         )
 
-        // Dead-center stationary moth logo (unified 172.dp with zero extra padding)
+        // Dead-center stationary geometric BP monogram logo (unified 172.dp)
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
             val baseModifier = Modifier.size(172.dp)
 
-            val mothModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            val bpModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     baseModifier.sharedElement(
-                        rememberSharedContentState(key = "monethra_moth_logo"),
+                        rememberSharedContentState(key = "budgetpulse_logo"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(600, easing = FastOutSlowInEasing) },
                     )
@@ -178,27 +157,13 @@ fun SplashScreen(
             }
 
             Image(
-                painter = painterResource(id = R.drawable.app_logo),
-                contentDescription = "Monethra Logo",
+                painter = painterResource(id = R.drawable.logo_no_bg),
+                contentDescription = "BudgetPulse Logo",
                 contentScale = ContentScale.Fit,
-                modifier = mothModifier,
+                modifier = bpModifier,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
             )
         }
-
-        // Bottom "monethra" wordmark in darker muted pastel plum shade with entrance slide
-        Text(
-            text = "monethra",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.5.sp,
-            color = Color(0xFF3E3B6E),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 52.dp)
-                .offset { IntOffset(0, wordmarkOffsetY.value.dp.roundToPx()) }
-                .alpha(wordmarkAlpha.value),
-        )
     }
 }
 

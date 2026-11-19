@@ -63,14 +63,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monethra.MonethraApplication
 import com.example.monethra.data.entity.TransactionEntity
+import com.example.monethra.ui.theme.BudgetPulseTheme
 import com.example.monethra.ui.theme.DustyPink
 import com.example.monethra.ui.theme.ExpenseRed
 import com.example.monethra.ui.theme.IncomeGreen
+import com.example.monethra.ui.theme.IvoryWhite
 import com.example.monethra.ui.theme.MonethraTheme
 import com.example.monethra.ui.theme.PowderBlue
 import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SageGreen
 import com.example.monethra.ui.theme.SecondaryText
+import com.example.monethra.ui.theme.getCategoryBadgeIconTint
+import com.example.monethra.ui.theme.SmokyBlack
 import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.utils.DateUtils
@@ -179,8 +183,8 @@ fun TransactionsContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
-                containerColor = PowderBlue,
-                contentColor = PrimaryText,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape
             ) {
                 Icon(
@@ -206,7 +210,7 @@ fun TransactionsContent(
                     text = "Transactions",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
                 )
 
@@ -214,12 +218,12 @@ fun TransactionsContent(
                 OutlinedTextField(
                     value = uiState.searchQuery,
                     onValueChange = onSearchQueryChange,
-                    placeholder = { Text("Search transactions...", color = SecondaryText) },
+                    placeholder = { Text("Search transactions...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Rounded.Search,
                             contentDescription = "Search",
-                            tint = SecondaryText
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     trailingIcon = {
@@ -228,7 +232,7 @@ fun TransactionsContent(
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = "Clear search",
-                                    tint = SecondaryText
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -238,8 +242,8 @@ fun TransactionsContent(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedBorderColor = PowderBlue,
-                        unfocusedBorderColor = Color(0xFFE0E0E0)
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -265,10 +269,10 @@ fun TransactionsContent(
                             },
                             shape = RoundedCornerShape(12.dp),
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = PowderBlue,
-                                selectedLabelColor = PrimaryText,
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                 containerColor = MaterialTheme.colorScheme.surface,
-                                labelColor = SecondaryText
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
@@ -332,13 +336,13 @@ fun TransactionsContent(
                     Text(
                         text = "Delete Transaction?",
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 text = {
                     Text(
                         text = "Are you sure you want to delete \"${uiState.transactionToDelete.title}\"? This action cannot be undone.",
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 confirmButton = {
@@ -355,7 +359,7 @@ fun TransactionsContent(
                 },
                 dismissButton = {
                     TextButton(onClick = onDismissDeleteDialog) {
-                        Text("Cancel", color = PrimaryText)
+                        Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -376,7 +380,7 @@ fun TransactionListItem(
     val icon = CategoryData.getIconForCategory(transaction.category)
     val bgColor = CategoryData.getColorForCategory(transaction.category)
     val amountPrefix = if (isIncome) "+" else "-"
-    val amountColor = if (isIncome) IncomeGreen else PrimaryText
+    val amountColor = if (isIncome) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 
     Card(
         modifier = Modifier
@@ -407,7 +411,7 @@ fun TransactionListItem(
                     Icon(
                         imageVector = icon,
                         contentDescription = transaction.category,
-                        tint = PrimaryText,
+                        tint = getCategoryBadgeIconTint(bgColor),
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -417,7 +421,7 @@ fun TransactionListItem(
                         text = transaction.title,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = PrimaryText,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -425,7 +429,7 @@ fun TransactionListItem(
                     Text(
                         text = "${transaction.category} • ${DateUtils.formatDate(transaction.date, "dd MMM yyyy")}",
                         fontSize = 12.sp,
-                        color = SecondaryText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -455,7 +459,7 @@ fun TransactionListItem(
                     Icon(
                         imageVector = Icons.Rounded.Edit,
                         contentDescription = "Edit",
-                        tint = SecondaryText,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -495,13 +499,13 @@ fun EmptyTransactionsState(
                 modifier = Modifier
                     .size(72.dp)
                     .clip(CircleShape)
-                    .background(WarmIvory),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ReceiptLong,
                     contentDescription = null,
-                    tint = SecondaryText,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -518,7 +522,7 @@ fun EmptyTransactionsState(
                 text = message,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = PrimaryText,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
 
@@ -527,7 +531,7 @@ fun EmptyTransactionsState(
             Text(
                 text = "Tap below to record a new transaction",
                 fontSize = 13.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -536,18 +540,23 @@ fun EmptyTransactionsState(
             Button(
                 onClick = onAddClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PowderBlue,
-                    contentColor = PrimaryText
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Add,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Add Transaction", fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Add Transaction",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }
@@ -556,7 +565,31 @@ fun EmptyTransactionsState(
 @Preview
 @Composable
 fun TransactionsContentPreview() {
-    MonethraTheme {
+    BudgetPulseTheme(darkTheme = false) {
+        TransactionsContent(
+            uiState = TransactionUiState(
+                filteredTransactions = listOf(
+                    TransactionEntity(1L, "Grocery Shopping", 350000L, "EXPENSE", "Food & Drinks", System.currentTimeMillis()),
+                    TransactionEntity(2L, "Monthly Salary", 7500000L, "INCOME", "Salary", System.currentTimeMillis())
+                )
+            ),
+            onSearchQueryChange = {},
+            onFilterChange = {},
+            onAddClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
+            onDismissAddEditSheet = {},
+            onSaveTransaction = { _, _, _, _, _, _ -> },
+            onDismissDeleteDialog = {},
+            onConfirmDelete = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionsContentDarkPreview() {
+    BudgetPulseTheme(darkTheme = true) {
         TransactionsContent(
             uiState = TransactionUiState(
                 filteredTransactions = listOf(

@@ -180,6 +180,7 @@ class FinanceRepository(
     val isOnboardingCompleted: Flow<Boolean> = userPreferencesRepository.isOnboardingCompleted
     val currencySymbol: Flow<String> = userPreferencesRepository.currencySymbol
     val themePreference: Flow<String> = userPreferencesRepository.themePreference
+    val isDarkMode: Flow<Boolean> = userPreferencesRepository.isDarkMode
     val notificationsEnabled: Flow<Boolean> = userPreferencesRepository.notificationsEnabled
     val paydayStartDay: Flow<Int> = userPreferencesRepository.paydayStartDay
     val lastProcessedPaydayCycle: Flow<String> = userPreferencesRepository.lastProcessedPaydayCycle
@@ -194,6 +195,10 @@ class FinanceRepository(
 
     suspend fun setThemePreference(theme: String) {
         userPreferencesRepository.setThemePreference(theme)
+    }
+
+    suspend fun setDarkMode(enabled: Boolean) {
+        userPreferencesRepository.setDarkMode(enabled)
     }
 
     suspend fun setNotificationsEnabled(enabled: Boolean) {
@@ -251,7 +256,7 @@ class FinanceRepository(
         val currentUserId = activeUserId.first()
         val existingUser = if (currentUserId > 0) userDao.getUserByIdSync(currentUserId) else userDao.getUserSync()
         val targetUserId = existingUser?.id ?: userDao.insertUser(
-            UserEntity(name = "Monethra User", email = "user@monethra.app")
+            UserEntity(name = "BudgetPulse User", email = "user@budgetpulse.app")
         )
 
         val currentMonth = DateUtils.getCurrentMonth()

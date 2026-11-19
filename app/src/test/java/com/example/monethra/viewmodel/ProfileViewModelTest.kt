@@ -107,6 +107,7 @@ class ProfileViewModelTest {
     private class FakeUserPreferencesRepository : UserPreferencesRepository {
         val symbolFlow = MutableStateFlow("Rp")
         val themeFlow = MutableStateFlow("SYSTEM")
+        val darkModeFlow = MutableStateFlow(false)
         val notificationsFlow = MutableStateFlow(true)
         val paydayFlow = MutableStateFlow(1)
         val lastCycleFlow = MutableStateFlow("")
@@ -119,6 +120,7 @@ class ProfileViewModelTest {
         override val userEmailPreference: Flow<String?> = flowOf("alice@example.com")
         override val currencySymbol: Flow<String> = symbolFlow
         override val themePreference: Flow<String> = themeFlow
+        override val isDarkMode: Flow<Boolean> = darkModeFlow
         override val notificationsEnabled: Flow<Boolean> = notificationsFlow
         override val paydayStartDay: Flow<Int> = paydayFlow
         override val lastProcessedPaydayCycle: Flow<String> = lastCycleFlow
@@ -134,6 +136,9 @@ class ProfileViewModelTest {
         }
         override suspend fun setThemePreference(theme: String) {
             themeFlow.value = theme
+        }
+        override suspend fun setDarkMode(enabled: Boolean) {
+            darkModeFlow.value = enabled
         }
         override suspend fun setNotificationsEnabled(enabled: Boolean) {
             notificationsFlow.value = enabled
@@ -270,5 +275,19 @@ class ProfileViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(25, viewModel.uiState.value.paydayStartDay)
+    }
+
+    @Test
+    fun profileViewModel_updateDarkMode_updatesPreference() = runTest {
+        backgroundScope.launch {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isDarkMode)
+        viewModel.updateDarkMode(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isDarkMode)
     }
 }

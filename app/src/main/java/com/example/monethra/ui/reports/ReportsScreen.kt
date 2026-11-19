@@ -80,7 +80,6 @@ import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SageGreen
 import com.example.monethra.ui.theme.SecondaryText
 import com.example.monethra.ui.theme.SoftLavender
-import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.viewmodel.ReportsUiState
 import com.example.monethra.viewmodel.ReportsViewModel
@@ -125,12 +124,12 @@ fun ReportsScreen(
                     text = "Financial Reports",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Analytics, trends, and monthly insights",
                     fontSize = 13.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -218,7 +217,7 @@ fun ReportsMonthPicker(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBackIos,
                     contentDescription = "Previous Month",
                     modifier = Modifier.size(18.dp),
-                    tint = PrimaryText
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -241,13 +240,13 @@ fun ReportsMonthPicker(
                         text = monthYearText,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     if (paydayCycleLabel.isNotBlank()) {
                         Text(
                             text = "Cycle: $paydayCycleLabel",
                             fontSize = 11.sp,
-                            color = SecondaryText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -258,7 +257,7 @@ fun ReportsMonthPicker(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
                     contentDescription = "Next Month",
                     modifier = Modifier.size(18.dp),
-                    tint = PrimaryText
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -285,7 +284,7 @@ fun ReportsSummaryCard(
                 text = "Monthly Overview",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -295,12 +294,12 @@ fun ReportsSummaryCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Total Income Badge (Sage Green)
+                // Total Income Badge
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(SageGreen)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(12.dp)
                 ) {
                     Column {
@@ -309,13 +308,13 @@ fun ReportsSummaryCard(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(IncomeGreen),
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.ArrowDownward,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(14.dp)
                                 )
                             }
@@ -324,7 +323,7 @@ fun ReportsSummaryCard(
                                 text = "Income",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = PrimaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -332,17 +331,17 @@ fun ReportsSummaryCard(
                             text = CurrencyFormatter.formatIdr(uiState.totalIncome, uiState.currencySymbol),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
 
-                // Total Expense Badge (Dusty Pink)
+                // Total Expense Badge
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(DustyPink)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(12.dp)
                 ) {
                     Column {
@@ -351,13 +350,13 @@ fun ReportsSummaryCard(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(ExpenseRed),
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.ArrowUpward,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(14.dp)
                                 )
                             }
@@ -366,7 +365,7 @@ fun ReportsSummaryCard(
                                 text = "Expenses",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = PrimaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -374,7 +373,7 @@ fun ReportsSummaryCard(
                             text = CurrencyFormatter.formatIdr(uiState.totalExpenses, uiState.currencySymbol),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -391,13 +390,13 @@ fun ReportsSummaryCard(
                     Text(
                         text = "Net Savings",
                         fontSize = 12.sp,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = CurrencyFormatter.formatIdr(uiState.netSavings, uiState.currencySymbol),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (uiState.netSavings >= 0) IncomeGreen else ExpenseRed
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -405,13 +404,13 @@ fun ReportsSummaryCard(
                     Text(
                         text = "Remaining Budget",
                         fontSize = 12.sp,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = CurrencyFormatter.formatIdr(uiState.remainingBudget, uiState.currencySymbol),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -428,13 +427,13 @@ fun ReportsSummaryCard(
                     text = "Budget Utilization",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "${String.format(Locale.ROOT, "%.1f", uiState.budgetUtilizationPercentage)}%",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
@@ -444,12 +443,8 @@ fun ReportsSummaryCard(
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = when {
-                    uiState.budgetUtilizationPercentage >= 100f -> ExpenseRed
-                    uiState.budgetUtilizationPercentage >= 75f -> Color(0xFFFF9800)
-                    else -> IncomeGreen
-                },
-                trackColor = WarmIvory
+                color = if (uiState.budgetUtilizationPercentage >= 100f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
             )
         }
     }
@@ -477,7 +472,7 @@ fun BarChartCard(
                 Icon(
                     imageVector = Icons.Rounded.Analytics,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -485,19 +480,21 @@ fun BarChartCard(
                     text = "Income vs Expense",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
                 text = "Weekly comparison within the month",
                 fontSize = 12.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
             BarChart(
                 groups = uiState.weeklyIncomeVsExpense,
                 currencySymbol = uiState.currencySymbol,
+                incomeColor = MaterialTheme.colorScheme.primary,
+                expenseColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
                 height = 200.dp
             )
         }
@@ -526,7 +523,7 @@ fun LineChartCard(
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ShowChart,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -534,13 +531,13 @@ fun LineChartCard(
                     text = "Daily Spending Trends",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
                 text = "Daily expense progression through the month",
                 fontSize = 12.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -575,7 +572,7 @@ fun DonutChartCard(
                 Icon(
                     imageVector = Icons.Rounded.PieChart,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -583,13 +580,13 @@ fun DonutChartCard(
                     text = "Expense Distribution",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
                 text = "Percentage distribution by category",
                 fontSize = 12.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -626,13 +623,13 @@ fun MonthlyRecapCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(SoftLavender),
+                        .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.AutoAwesome,
                         contentDescription = null,
-                        tint = PrimaryText,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -642,12 +639,12 @@ fun MonthlyRecapCard(
                         text = "Automated Monthly Recap",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Key insights generated for ${uiState.monthYearText}",
                         fontSize = 12.sp,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -664,7 +661,7 @@ fun MonthlyRecapCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(WarmIvory)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(10.dp)
                 ) {
                     Column {
@@ -673,13 +670,13 @@ fun MonthlyRecapCard(
                                 imageVector = Icons.AutoMirrored.Rounded.ReceiptLong,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = SecondaryText
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Transactions",
                                 fontSize = 11.sp,
-                                color = SecondaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -687,7 +684,7 @@ fun MonthlyRecapCard(
                             text = uiState.transactionCount.toString(),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -697,7 +694,7 @@ fun MonthlyRecapCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(WarmIvory)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(10.dp)
                 ) {
                     Column {
@@ -707,13 +704,13 @@ fun MonthlyRecapCard(
                                 imageVector = if (isLower) Icons.AutoMirrored.Rounded.TrendingDown else Icons.AutoMirrored.Rounded.TrendingUp,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = if (isLower) IncomeGreen else ExpenseRed
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "vs Prev Month",
                                 fontSize = 11.sp,
-                                color = SecondaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -721,7 +718,7 @@ fun MonthlyRecapCard(
                             text = "${if (uiState.prevMonthComparisonPercentage > 0) "+" else ""}${String.format(Locale.ROOT, "%.1f", uiState.prevMonthComparisonPercentage)}%",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (uiState.prevMonthComparisonPercentage < 0) IncomeGreen else if (uiState.prevMonthComparisonPercentage > 0) ExpenseRed else PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -738,7 +735,7 @@ fun MonthlyRecapCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(WarmIvory)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(10.dp)
                 ) {
                     Column {
@@ -747,13 +744,13 @@ fun MonthlyRecapCard(
                                 imageVector = Icons.Rounded.Category,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = SecondaryText
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Highest Category",
                                 fontSize = 11.sp,
-                                color = SecondaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -761,7 +758,7 @@ fun MonthlyRecapCard(
                             text = uiState.highestSpendingCategory ?: "-",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1
                         )
                     }
@@ -772,7 +769,7 @@ fun MonthlyRecapCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(WarmIvory)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(10.dp)
                 ) {
                     Column {
@@ -781,13 +778,13 @@ fun MonthlyRecapCard(
                                 imageVector = Icons.Rounded.Category,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = SecondaryText
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Lowest Category",
                                 fontSize = 11.sp,
-                                color = SecondaryText
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -795,7 +792,7 @@ fun MonthlyRecapCard(
                             text = uiState.lowestSpendingCategory ?: "-",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1
                         )
                     }
@@ -809,7 +806,7 @@ fun MonthlyRecapCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
-                    .background(SoftLavender)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(14.dp)
             ) {
                 Column {
@@ -817,7 +814,7 @@ fun MonthlyRecapCard(
                         Icon(
                             imageVector = Icons.Rounded.AutoAwesome,
                             contentDescription = null,
-                            tint = PrimaryText,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -825,7 +822,7 @@ fun MonthlyRecapCard(
                             text = "Smart Financial Insight",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
@@ -833,7 +830,7 @@ fun MonthlyRecapCard(
                         text = uiState.textualFinancialInsight,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryText,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         lineHeight = 18.sp
                     )
                 }
@@ -849,8 +846,8 @@ fun MonthlyRecapCard(
                     .height(52.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PastelPeriwinkle,
-                    contentColor = DeepIndigo
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Row(
@@ -860,7 +857,7 @@ fun MonthlyRecapCard(
                     Icon(
                         imageVector = Icons.Rounded.PictureAsPdf,
                         contentDescription = "PDF Icon",
-                        tint = DeepIndigo,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -868,7 +865,7 @@ fun MonthlyRecapCard(
                         text = "Export Monthly Recap to PDF",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = DeepIndigo
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -901,7 +898,7 @@ fun MonthYearPickerDialog(
                 text = "Select Month & Year",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -950,7 +947,7 @@ fun MonthYearPickerDialog(
                         text = "Year",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = { selectedYear -= 1 }) {
@@ -964,7 +961,7 @@ fun MonthYearPickerDialog(
                             text = "$selectedYear",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                         IconButton(onClick = { selectedYear += 1 }) {
@@ -989,4 +986,50 @@ fun MonthYearPickerDialog(
             }
         }
     )
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun MonthlyRecapCardPreview() {
+    com.example.monethra.ui.theme.BudgetPulseTheme(darkTheme = false) {
+        MonthlyRecapCard(
+            uiState = com.example.monethra.viewmodel.ReportsUiState(
+                selectedMonth = 11,
+                selectedYear = 2026,
+                totalIncome = 15000000L,
+                totalExpenses = 8500000L,
+                currencySymbol = "Rp"
+            ),
+            onExportPdfClick = {}
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun ReportsDarkOverviewAndChartPreview() {
+    val sampleState = com.example.monethra.viewmodel.ReportsUiState(
+        selectedMonth = 11,
+        selectedYear = 2026,
+        totalIncome = 15000000L,
+        totalExpenses = 8500000L,
+        netSavings = 6500000L,
+        remainingBudget = 2500000L,
+        budgetUtilizationPercentage = 77.2f,
+        currencySymbol = "Rp",
+        weeklyIncomeVsExpense = listOf(
+            com.example.monethra.ui.components.BarChartGroup("W1", 5000000L, 2000000L),
+            com.example.monethra.ui.components.BarChartGroup("W2", 4000000L, 3000000L),
+            com.example.monethra.ui.components.BarChartGroup("W3", 6000000L, 3500000L)
+        )
+    )
+    com.example.monethra.ui.theme.BudgetPulseTheme(darkTheme = true) {
+        androidx.compose.foundation.layout.Column(
+            modifier = androidx.compose.ui.Modifier.padding(16.dp),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+        ) {
+            ReportsSummaryCard(uiState = sampleState)
+            BarChartCard(uiState = sampleState)
+        }
+    }
 }

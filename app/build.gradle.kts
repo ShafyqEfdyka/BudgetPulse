@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.monethra"
+        applicationId = "com.budgetpulse.app"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.accompanist.permissions)
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation(libs.androidx.activity.compose)
     implementation("androidx.compose.animation:animation")
     implementation(libs.androidx.camera.camera2)

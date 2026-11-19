@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Event
@@ -76,7 +77,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.monethra.data.model.CurrencyModel
+import com.example.monethra.ui.theme.BudgetPulseTheme
 import com.example.monethra.data.model.WorldCurrency
 import com.example.monethra.data.model.GLOBAL_CURRENCY_CATALOG
 import java.text.NumberFormat
@@ -102,12 +105,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monethra.MonethraApplication
 import com.example.monethra.ui.theme.DeepIndigo
-import com.example.monethra.ui.theme.ExpenseRed
 import com.example.monethra.ui.theme.PastelPeriwinkle
-import com.example.monethra.ui.theme.PrimaryText
-import com.example.monethra.ui.theme.SecondaryText
-import com.example.monethra.ui.theme.SoftLavender
-import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.viewmodel.ProfileViewModel
 import com.example.monethra.viewmodel.ProfileViewModelFactory
 
@@ -194,12 +192,12 @@ fun ProfileScreen(
                         text = "Profile & Settings",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         text = "Manage user details, preferences, and data",
                         fontSize = 13.sp,
-                        color = SecondaryText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -217,10 +215,12 @@ fun ProfileScreen(
                     PreferencesSection(
                         currencySymbol = selectedCurrency,
                         notificationsEnabled = uiState.notificationsEnabled,
+                        isDarkMode = uiState.isDarkMode,
                         paydayStartDay = paydayStartDay,
                         onCurrencyClick = { viewModel.openCurrencyDialog() },
                         onPaydayStartDayClick = { viewModel.openPaydayStartDayDialog() },
-                        onNotificationsToggle = { enabled -> viewModel.updateNotificationSettings(enabled) }
+                        onNotificationsToggle = { enabled -> viewModel.updateNotificationSettings(enabled) },
+                        onDarkModeToggle = { enabled -> viewModel.updateDarkMode(enabled) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -249,7 +249,8 @@ fun ProfileScreen(
                             .clickable { isLogoutDialogOpen = true },
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -260,7 +261,7 @@ fun ProfileScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.Logout,
                                 contentDescription = "Log Out",
-                                tint = ExpenseRed,
+                                tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(22.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
@@ -268,7 +269,7 @@ fun ProfileScreen(
                                 text = "Log Out",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = ExpenseRed
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -350,14 +351,17 @@ fun ProfileScreen(
             if (uiState.isResetDataDialogOpen) {
                 AlertDialog(
                     onDismissRequest = { viewModel.closeResetDataDialog() },
-                    title = { Text("Reset All Financial Data?", fontWeight = FontWeight.Bold, color = ExpenseRed) },
+                    title = { Text("Reset All Financial Data?", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error) },
                     text = { Text("Are you sure you want to permanently delete all transactions, budgets, and category allocations? This action cannot be undone.") },
                     confirmButton = {
                         Button(
                             onClick = { viewModel.resetFinancialData() },
-                            colors = ButtonDefaults.buttonColors(containerColor = ExpenseRed)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
                         ) {
-                            Text("Reset Data", color = Color.White)
+                            Text("Reset Data", color = MaterialTheme.colorScheme.onError)
                         }
                     },
                     dismissButton = {
@@ -388,7 +392,7 @@ fun ProfileScreen(
                 AlertDialog(
                     onDismissRequest = { isLogoutDialogOpen = false },
                     title = { Text("Log Out Confirmation", fontWeight = FontWeight.Bold) },
-                    text = { Text("Are you sure you want to log out of MONETHRA?") },
+                    text = { Text("Are you sure you want to log out of BudgetPulse?") },
                     confirmButton = {
                         Button(
                             onClick = {
@@ -397,9 +401,12 @@ fun ProfileScreen(
                                     onLogout()
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = ExpenseRed)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
                         ) {
-                            Text("Log Out", color = Color.White)
+                            Text("Log Out", color = MaterialTheme.colorScheme.onError)
                         }
                     },
                     dismissButton = {
@@ -438,14 +445,14 @@ fun UserProfileCard(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(SoftLavender),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = avatarInitial,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
@@ -456,12 +463,12 @@ fun UserProfileCard(
                     text = userName,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = userEmail ?: "No email set",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -481,10 +488,12 @@ fun UserProfileCard(
 fun PreferencesSection(
     currencySymbol: String,
     notificationsEnabled: Boolean,
+    isDarkMode: Boolean,
     paydayStartDay: Int,
     onCurrencyClick: () -> Unit,
     onPaydayStartDayClick: () -> Unit,
     onNotificationsToggle: (Boolean) -> Unit,
+    onDarkModeToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -502,7 +511,7 @@ fun PreferencesSection(
                 Icon(
                     imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -510,7 +519,7 @@ fun PreferencesSection(
                     text = "App Preferences",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -525,14 +534,14 @@ fun PreferencesSection(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(WarmIvory)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(
                             text = currencySymbol,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -553,14 +562,14 @@ fun PreferencesSection(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(WarmIvory)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(
                             text = "Day $paydayStartDay",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -582,10 +591,36 @@ fun PreferencesSection(
                         checked = notificationsEnabled,
                         onCheckedChange = onNotificationsToggle,
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.White,
-                            uncheckedThumbColor = Color.White,
-                            checkedTrackColor = Color(0xFFD8E5F8),
-                            uncheckedTrackColor = Color(0xFFE2DCE5),
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = Color.Transparent,
+                            checkedBorderColor = Color.Transparent
+                        )
+                    )
+                }
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 10.dp),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+            )
+
+            // Dark Mode Toggle Row
+            SettingsRowItem(
+                icon = Icons.Rounded.DarkMode,
+                title = "Dark Mode",
+                subtitle = "Invert palette to monochrome dark",
+                trailing = {
+                    Switch(
+                        checked = isDarkMode,
+                        onCheckedChange = onDarkModeToggle,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
                             uncheckedBorderColor = Color.Transparent,
                             checkedBorderColor = Color.Transparent
                         )
@@ -619,7 +654,7 @@ fun DataManagementSection(
                 Icon(
                     imageVector = Icons.Rounded.Storage,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -627,7 +662,7 @@ fun DataManagementSection(
                     text = "Data Management",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -641,22 +676,22 @@ fun DataManagementSection(
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PastelPeriwinkle,
-                    contentColor = DeepIndigo
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(
                     imageVector = Icons.Default.PictureAsPdf,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
-                    tint = DeepIndigo
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Export Monthly Recap to PDF",
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-                    color = DeepIndigo
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -685,16 +720,17 @@ fun DataManagementSection(
                     onClick = onResetDataClick,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ExpenseRed)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.DeleteSweep,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        tint = ExpenseRed
+                        tint = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Reset Financial Data", fontWeight = FontWeight.SemiBold, color = ExpenseRed)
+                    Text("Reset Financial Data", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -722,7 +758,7 @@ fun AppInfoSection(
                 Icon(
                     imageVector = Icons.Rounded.Info,
                     contentDescription = null,
-                    tint = PrimaryText,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -730,7 +766,7 @@ fun AppInfoSection(
                     text = "Application Info",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -743,29 +779,29 @@ fun AppInfoSection(
             ) {
                 Column {
                     Text(
-                        text = "MONETHRA",
+                        text = "BudgetPulse",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Personal Finance Tracker",
                         fontSize = 12.sp,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(WarmIvory)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "v1.0.0",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -777,7 +813,7 @@ fun AppInfoSection(
 
             SettingsRowItem(
                 icon = Icons.AutoMirrored.Rounded.Help,
-                title = "About MONETHRA & Privacy",
+                title = "About BudgetPulse & Privacy",
                 subtitle = "App information, features & privacy details",
                 onClick = onAboutClick
             )
@@ -804,7 +840,7 @@ fun SettingsRowItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = SecondaryText,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
@@ -813,12 +849,12 @@ fun SettingsRowItem(
                 text = title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = subtitle,
                 fontSize = 12.sp,
-                color = SecondaryText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (trailing != null) {
@@ -865,7 +901,7 @@ fun EditProfileDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val finalName = name.trim().ifBlank { "Monethra User" }
+                    val finalName = name.trim().ifBlank { "BudgetPulse User" }
                     val finalEmail = email.trim().ifBlank { null }
                     onConfirm(finalName, finalEmail)
                 }
@@ -899,7 +935,7 @@ fun CurrencySelectorDialog(
                 text = "Select Currency Preference",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -912,7 +948,7 @@ fun CurrencySelectorDialog(
                 Text(
                     text = "Financial amounts will convert automatically. Base records remain in IDR.",
                     fontSize = 12.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 16.sp
                 )
 
@@ -930,11 +966,11 @@ fun CurrencySelectorDialog(
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { selectedCode = currency.code },
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Color(0xFF9FA0FF).copy(alpha = 0.2f) else Color.Transparent,
+                        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
                         border = if (isSelected) {
-                            BorderStroke(1.5.dp, Color(0xFF9FA0FF))
+                            BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
                         } else {
-                            BorderStroke(1.dp, Color(0xFFE5E7EB))
+                            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                         }
                     ) {
                         Row(
@@ -947,8 +983,8 @@ fun CurrencySelectorDialog(
                                 selected = isSelected,
                                 onClick = { selectedCode = currency.code },
                                 colors = RadioButtonDefaults.colors(
-                                    selectedColor = Color(0xFF4F46E5),
-                                    unselectedColor = Color(0xFF6B7280)
+                                    selectedColor = MaterialTheme.colorScheme.primary,
+                                    unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
 
@@ -959,7 +995,7 @@ fun CurrencySelectorDialog(
                                     text = "${currency.code} (${currency.symbol}) - ${currency.name}",
                                     fontSize = 14.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                                    color = PrimaryText
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
@@ -969,7 +1005,7 @@ fun CurrencySelectorDialog(
                                         "1 ${currency.code} ≈ Rp $formattedRate"
                                     },
                                     fontSize = 12.sp,
-                                    color = if (isSelected) Color(0xFF4338CA) else SecondaryText
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -981,7 +1017,7 @@ fun CurrencySelectorDialog(
                                     Icon(
                                         imageVector = Icons.Rounded.DeleteOutline,
                                         contentDescription = "Delete ${currency.code}",
-                                        tint = ExpenseRed,
+                                        tint = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -997,9 +1033,9 @@ fun CurrencySelectorDialog(
                     onClick = onOpenAddCustomCurrency,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, Color(0xFF9FA0FF)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFF4F46E5)
+                        contentColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Icon(
@@ -1020,7 +1056,7 @@ fun CurrencySelectorDialog(
                 Text(
                     text = "Rates updated automatically • Real-time",
                     fontSize = 11.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
@@ -1036,8 +1072,8 @@ fun CurrencySelectorDialog(
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF9FA0FF),
-                    contentColor = Color(0xFF1E1B4B)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
@@ -1050,7 +1086,7 @@ fun CurrencySelectorDialog(
             TextButton(
                 onClick = onDismiss,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color(0xFF4B5563)
+                    contentColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(
@@ -1111,12 +1147,12 @@ fun AddCurrencyPickerDialog(
                         text = "Add World Currency",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Select from global currencies with live rates",
                         fontSize = 12.sp,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -1133,14 +1169,14 @@ fun AddCurrencyPickerDialog(
                         Text(
                             text = "Search currency (e.g. JPY, Euro)...",
                             fontSize = 13.sp,
-                            color = SecondaryText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Rounded.Search,
                             contentDescription = "Search",
-                            tint = Color(0xFF6B7280),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -1150,7 +1186,7 @@ fun AddCurrencyPickerDialog(
                                 Icon(
                                     imageVector = Icons.Rounded.Close,
                                     contentDescription = "Clear",
-                                    tint = Color(0xFF6B7280),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -1173,7 +1209,7 @@ fun AddCurrencyPickerDialog(
                         Text(
                             text = if (searchQuery.isNotBlank()) "No currencies found matching \"$searchQuery\"" else "All available currencies have been added",
                             fontSize = 13.sp,
-                            color = SecondaryText,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -1195,10 +1231,10 @@ fun AddCurrencyPickerDialog(
 
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = if (isAddingThis) Color(0xFF9FA0FF).copy(alpha = 0.15f) else Color.White,
+                                color = if (isAddingThis) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                                 border = BorderStroke(
                                     1.dp,
-                                    if (isAddingThis) Color(0xFF9FA0FF) else Color(0xFFE5E7EB)
+                                    if (isAddingThis) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1216,13 +1252,13 @@ fun AddCurrencyPickerDialog(
                                     // Currency Code Pill Badge
                                     Surface(
                                         shape = RoundedCornerShape(8.dp),
-                                        color = Color(0xFF9FA0FF).copy(alpha = 0.2f)
+                                        color = MaterialTheme.colorScheme.secondaryContainer
                                     ) {
                                         Text(
                                             text = currency.code,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 12.sp,
-                                            color = Color(0xFF4338CA),
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                         )
                                     }
@@ -1234,13 +1270,13 @@ fun AddCurrencyPickerDialog(
                                             text = "${currency.symbol}  ${currency.name}",
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = PrimaryText
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Spacer(modifier = Modifier.height(2.dp))
                                         Text(
                                             text = "1 ${currency.code} ≈ Rp $formattedRate",
                                             fontSize = 12.sp,
-                                            color = SecondaryText
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
 
@@ -1291,7 +1327,7 @@ fun AboutMonethraDialog(
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("About MONETHRA", fontWeight = FontWeight.Bold)
+                Text("About BudgetPulse", fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -1300,20 +1336,20 @@ fun AboutMonethraDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "MONETHRA is a modern personal finance tracking app built using Jetpack Compose, Room Database, and Material Design 3.",
+                    text = "BudgetPulse is a modern personal finance tracking app built using Jetpack Compose, Room Database, and Material Design 3.",
                     fontSize = 13.sp,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "Key Features:",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "• Income & Expense tracking with custom categories\n• Monthly budget planning with dynamic threshold alerts\n• Visual reports with Bar, Line, and Donut charts\n• Automated financial recap insights\n• 100% offline-first local data storage",
                     fontSize = 12.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
@@ -1323,4 +1359,86 @@ fun AboutMonethraDialog(
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreferencesSectionPreview() {
+    BudgetPulseTheme(darkTheme = false) {
+        PreferencesSection(
+            currencySymbol = "Rp",
+            notificationsEnabled = true,
+            isDarkMode = false,
+            paydayStartDay = 1,
+            onCurrencyClick = {},
+            onPaydayStartDayClick = {},
+            onNotificationsToggle = {},
+            onDarkModeToggle = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreferencesSectionDarkPreview() {
+    BudgetPulseTheme(darkTheme = true) {
+        PreferencesSection(
+            currencySymbol = "Rp",
+            notificationsEnabled = true,
+            isDarkMode = true,
+            paydayStartDay = 1,
+            onCurrencyClick = {},
+            onPaydayStartDayClick = {},
+            onNotificationsToggle = {},
+            onDarkModeToggle = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileActionsDarkPreview() {
+    BudgetPulseTheme(darkTheme = true) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            DataManagementSection(
+                isDemoAccount = true,
+                onExportPdfRecapClick = {},
+                onLoadSampleDataClick = {},
+                onResetDataClick = {}
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Logout,
+                        contentDescription = "Log Out",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Log Out",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
+    }
 }

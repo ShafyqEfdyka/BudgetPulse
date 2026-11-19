@@ -260,7 +260,7 @@ class ReportsViewModelTest {
         assertTrue(state.paydayCycleLabel.isNotBlank())
 
         val subject = com.example.monethra.utils.EmailRecapHelper.generateEmailSubject(state.paydayCycleLabel)
-        assertTrue(subject.startsWith("[Monethra] Financial Recap"))
+        assertTrue(subject.startsWith("[BudgetPulse] Financial Recap"))
 
         val body = com.example.monethra.utils.EmailRecapHelper.generateEmailBody(
             userName = "Alice",

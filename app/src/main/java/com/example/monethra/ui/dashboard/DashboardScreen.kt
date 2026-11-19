@@ -63,16 +63,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.monethra.MonethraApplication
 import com.example.monethra.data.entity.TransactionEntity
 import com.example.monethra.ui.components.DonutChart
-import com.example.monethra.ui.theme.ButterCream
-import com.example.monethra.ui.theme.DustyPink
-import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.IncomeGreen
-import com.example.monethra.ui.theme.PowderBlue
-import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SageGreen
-import com.example.monethra.ui.theme.SecondaryText
-import com.example.monethra.ui.theme.SoftLavender
-import com.example.monethra.ui.theme.WarmIvory
+import com.example.monethra.ui.theme.getCategoryBadgeIconTint
 import com.example.monethra.ui.transactions.AddEditTransactionSheet
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.utils.DateUtils
@@ -288,13 +280,13 @@ fun HeaderSection(
             text = "$greeting, $userName! 👋",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = PrimaryText
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = formattedDate,
             fontSize = 13.sp,
-            color = SecondaryText
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -309,7 +301,7 @@ fun FinancialSummaryGrid(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = PowderBlue
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
@@ -325,19 +317,19 @@ fun FinancialSummaryGrid(
                         text = "Total Balance",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Box(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.6f)),
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.AccountBalanceWallet,
                             contentDescription = null,
-                            tint = PrimaryText,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -347,7 +339,7 @@ fun FinancialSummaryGrid(
                     text = CurrencyFormatter.formatIdr(uiState.totalBalance, uiState.currencySymbol),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -362,8 +354,6 @@ fun FinancialSummaryGrid(
                 title = "Monthly Income",
                 amount = CurrencyFormatter.formatIdr(uiState.monthlyIncome, uiState.currencySymbol),
                 icon = Icons.Rounded.ArrowDownward,
-                iconColor = IncomeGreen,
-                backgroundColor = SageGreen,
                 modifier = Modifier.weight(1f)
             )
 
@@ -372,8 +362,6 @@ fun FinancialSummaryGrid(
                 title = "Monthly Expenses",
                 amount = CurrencyFormatter.formatIdr(uiState.monthlyExpenses, uiState.currencySymbol),
                 icon = Icons.Rounded.ArrowUpward,
-                iconColor = ExpenseRed,
-                backgroundColor = DustyPink,
                 modifier = Modifier.weight(1f)
             )
 
@@ -382,8 +370,6 @@ fun FinancialSummaryGrid(
                 title = "Remaining Budget",
                 amount = CurrencyFormatter.formatIdr(uiState.remainingBudget, uiState.currencySymbol),
                 icon = Icons.Rounded.Tune,
-                iconColor = PrimaryText,
-                backgroundColor = ButterCream,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -395,9 +381,9 @@ fun SummaryItemCard(
     title: String,
     amount: String,
     icon: ImageVector,
-    iconColor: Color,
-    backgroundColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    iconColor: Color = MaterialTheme.colorScheme.onSurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant
 ) {
     Card(
         modifier = modifier,
@@ -412,7 +398,7 @@ fun SummaryItemCard(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.6f)),
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -428,7 +414,7 @@ fun SummaryItemCard(
                 fontSize = 11.sp,
                 lineHeight = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 softWrap = true,
                 overflow = TextOverflow.Clip
@@ -438,7 +424,7 @@ fun SummaryItemCard(
                 text = amount,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis
@@ -464,7 +450,7 @@ fun QuickActionsSection(
                 text = "Quick Actions",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -472,23 +458,20 @@ fun QuickActionsSection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 QuickActionButton(
-                    label = "Income",
+                    label = "+ Income",
                     icon = Icons.Rounded.Add,
-                    color = SageGreen,
                     onClick = onAddIncomeClick,
                     modifier = Modifier.weight(1f)
                 )
                 QuickActionButton(
-                    label = "Expense",
+                    label = "- Expense",
                     icon = Icons.Rounded.Remove,
-                    color = DustyPink,
                     onClick = onAddExpenseClick,
                     modifier = Modifier.weight(1f)
                 )
                 QuickActionButton(
                     label = "Set Budget",
                     icon = Icons.Rounded.Tune,
-                    color = SoftLavender,
                     onClick = onSetBudgetClick,
                     modifier = Modifier.weight(1f)
                 )
@@ -501,9 +484,9 @@ fun QuickActionsSection(
 fun QuickActionButton(
     label: String,
     icon: ImageVector,
-    color: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceVariant
 ) {
     Row(
         modifier = modifier
@@ -514,18 +497,26 @@ fun QuickActionButton(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = PrimaryText,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(14.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = label,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            color = PrimaryText,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             softWrap = false,
             overflow = TextOverflow.Ellipsis
@@ -548,7 +539,7 @@ fun ExpenseOverviewCard(
                 text = "Expense Overview",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(16.dp))
             DonutChart(
@@ -581,10 +572,10 @@ fun BudgetProgressCard(
                     text = "Monthly Budget Progress",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 TextButton(onClick = onSetBudgetClick) {
-                    Text("Manage", fontSize = 12.sp, color = SecondaryText)
+                    Text("Manage", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -602,27 +593,27 @@ fun BudgetProgressCard(
                     text = "$spentText spent",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "of $budgetText",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            val progressColor = if (uiState.budgetUsagePercentage > 0.9f) ExpenseRed else IncomeGreen
+            val progressColor = if (uiState.budgetUsagePercentage > 1f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
 
             LinearProgressIndicator(
-                progress = { uiState.budgetUsagePercentage },
+                progress = { uiState.budgetUsagePercentage.coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp)
                     .clip(CircleShape),
                 color = progressColor,
-                trackColor = WarmIvory,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
                 strokeCap = StrokeCap.Round
             )
 
@@ -632,7 +623,7 @@ fun BudgetProgressCard(
             Text(
                 text = "$percentText% of total budget used",
                 fontSize = 12.sp,
-                color = SecondaryText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -660,17 +651,17 @@ fun RecentTransactionsCard(
                     text = "Recent Transactions",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 TextButton(onClick = onSeeAllClick) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("See All", fontSize = 13.sp, color = SecondaryText)
+                        Text("See All", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = SecondaryText
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -682,7 +673,7 @@ fun RecentTransactionsCard(
                 Text(
                     text = "No recent transactions found.",
                     fontSize = 13.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
             } else {
@@ -706,15 +697,15 @@ fun RecentTransactionItem(
 ) {
     val isIncome = transaction.type == "INCOME"
     val icon = getCategoryIcon(transaction.category)
-    val bgColor = if (isIncome) SageGreen else WarmIvory
+    val bgColor = if (isIncome) SageGreen else MaterialTheme.colorScheme.secondaryContainer
     val amountPrefix = if (isIncome) "+" else "-"
-    val amountColor = if (isIncome) IncomeGreen else PrimaryText
+    val amountColor = if (isIncome) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(WarmIvory)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -733,7 +724,7 @@ fun RecentTransactionItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = transaction.category,
-                    tint = PrimaryText,
+                    tint = getCategoryBadgeIconTint(bgColor),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -743,7 +734,7 @@ fun RecentTransactionItem(
                     text = transaction.title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -751,7 +742,7 @@ fun RecentTransactionItem(
                 Text(
                     text = "${transaction.category} • ${DateUtils.formatDate(transaction.date, "dd MMM")}",
                     fontSize = 12.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -831,13 +822,13 @@ fun PaydayBannerCard(
                         text = message,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     if (cycleLabel.isNotBlank()) {
                         Text(
                             text = "Current cycle: $cycleLabel",
                             fontSize = 12.sp,
-                            color = SecondaryText
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
                         )
                     }
                 }
@@ -847,10 +838,40 @@ fun PaydayBannerCard(
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = "Dismiss Banner",
-                    tint = SecondaryText,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
                     modifier = Modifier.size(18.dp)
                 )
             }
+        }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun DashboardSummaryDarkPreview() {
+    val sampleState = DashboardUiState(
+        totalBalance = 11905000L,
+        monthlyIncome = 9000000L,
+        monthlyExpenses = 1845000L,
+        remainingBudget = 3155000L,
+        monthlyBudget = 5000000L,
+        budgetUsagePercentage = 0.369f,
+        currencySymbol = "Rp"
+    )
+    com.example.monethra.ui.theme.BudgetPulseTheme(darkTheme = true) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            FinancialSummaryGrid(uiState = sampleState)
+            QuickActionsSection(
+                onAddIncomeClick = {},
+                onAddExpenseClick = {},
+                onSetBudgetClick = {}
+            )
+            BudgetProgressCard(uiState = sampleState, onSetBudgetClick = {})
         }
     }
 }

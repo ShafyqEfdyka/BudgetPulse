@@ -25,11 +25,11 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.SecondaryText
 
 data class DailySpendingData(
     val day: Int,
@@ -76,7 +76,7 @@ fun LineChart(
                 Text(
                     text = "No daily spending trends available for this month",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else {
@@ -116,7 +116,7 @@ fun LineChart(
 
                     drawContext.canvas.nativeCanvas.apply {
                         val paint = android.graphics.Paint().apply {
-                            color = labelTextColor.hashCode()
+                            color = labelTextColor.toArgb()
                             textSize = 10.sp.toPx()
                             textAlign = android.graphics.Paint.Align.RIGHT
                             isAntiAlias = true
@@ -215,7 +215,7 @@ fun LineChart(
                         if (index == 0 || index == pointCount - 1 || index % labelInterval == 0) {
                             drawContext.canvas.nativeCanvas.apply {
                                 val paint = android.graphics.Paint().apply {
-                                    color = labelTextColor.hashCode()
+                                    color = labelTextColor.toArgb()
                                     textSize = 10.sp.toPx()
                                     textAlign = android.graphics.Paint.Align.CENTER
                                     isAntiAlias = true

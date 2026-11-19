@@ -9,7 +9,7 @@ import java.io.File
 object EmailRecapHelper {
 
     fun generateEmailSubject(cycleLabel: String): String {
-        return "[Monethra] Financial Recap - $cycleLabel"
+        return "[BudgetPulse] Financial Recap - $cycleLabel"
     }
 
     fun generateEmailBody(
@@ -28,7 +28,7 @@ object EmailRecapHelper {
         return """
             Hi $userName,
 
-            Please find attached your financial recap for $cycleLabel from MONETHRA.
+            Please find attached your financial recap for $cycleLabel from BudgetPulse.
 
             Summary:
             • Total Income: ${CurrencyFormatter.formatIdr(totalIncome)}
@@ -36,7 +36,7 @@ object EmailRecapHelper {
             • Net Savings: ${CurrencyFormatter.formatIdr(netSavings)}$budgetPart$categoryPart$detailPart
 
             Best regards,
-            MONETHRA Team
+            BudgetPulse Team
         """.trimIndent()
     }
 

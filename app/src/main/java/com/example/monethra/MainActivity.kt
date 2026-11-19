@@ -8,6 +8,12 @@ import android.view.animation.PathInterpolator
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
@@ -17,7 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.monethra.data.repository.AuthRepository
 import com.example.monethra.data.session.SessionManager
 import com.example.monethra.navigation.MonethraApp
-import com.example.monethra.ui.theme.MonethraTheme
+import com.example.monethra.ui.theme.BudgetPulseTheme
 import com.example.monethra.viewmodel.AuthViewModel
 import com.example.monethra.viewmodel.AuthViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +123,36 @@ class MainActivity : FragmentActivity() {
         )
 
         setContent {
-            MonethraTheme {
+            val userPrefsRepo = (application as? MonethraApplication)?.userPreferencesRepository
+            val isDarkMode by (userPrefsRepo?.isDarkMode?.collectAsState(initial = false)
+                ?: remember { mutableStateOf(false) })
+
+            DisposableEffect(isDarkMode) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isDarkMode) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                        )
+                    },
+                    navigationBarStyle = if (isDarkMode) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                        )
+                    },
+                )
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO,
+                )
+                onDispose {}
+            }
+
+            BudgetPulseTheme(darkTheme = isDarkMode) {
                 MonethraApp()
             }
         }

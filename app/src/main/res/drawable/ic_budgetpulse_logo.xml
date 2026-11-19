@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Left half-circle (bowl of 'b') anchored on the left bottom -->
+    <path
+        android:fillColor="#100C08"
+        android:pathData="M 48,54 A 22,22 0 0 0 48,98 Z" />
+    <!-- Central vertical solid rectangle pillar in the middle -->
+    <path
+        android:fillColor="#100C08"
+        android:pathData="M 48,10 H 60 V 98 H 48 Z" />
+    <!-- Right half-circle (bowl of 'p') anchored on the upper right -->
+    <path
+        android:fillColor="#100C08"
+        android:pathData="M 60,10 A 22,22 0 0 1 60,54 Z" />
+</vector>

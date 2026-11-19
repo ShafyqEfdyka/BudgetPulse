@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.monethra.ui.theme.PrimaryText
 
 import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 
@@ -72,9 +71,9 @@ fun MonethraBottomBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryText,
-                    selectedTextColor = PrimaryText,
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -96,8 +95,8 @@ fun MonethraNavRail(
             Spacer(modifier = Modifier.height(16.dp))
             Icon(
                 imageVector = Icons.Rounded.AccountBalanceWallet,
-                contentDescription = "Monethra",
-                tint = PrimaryText,
+                contentDescription = "BudgetPulse",
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(8.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -125,9 +124,9 @@ fun MonethraNavRail(
                     )
                 },
                 colors = NavigationRailItemDefaults.colors(
-                    selectedIconColor = PrimaryText,
-                    selectedTextColor = PrimaryText,
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )

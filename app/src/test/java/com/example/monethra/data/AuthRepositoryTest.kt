@@ -185,7 +185,7 @@ class AuthRepositoryTest {
 
         assertTrue(loginResult.isSuccess)
         val user = loginResult.getOrNull()
-        assertEquals("Monethra Demo", user?.name)
+        assertEquals("BudgetPulse Demo", user?.name)
         assertEquals("monthra@andro.app", user?.email)
         assertTrue(prefsRepo.loggedIn)
     }

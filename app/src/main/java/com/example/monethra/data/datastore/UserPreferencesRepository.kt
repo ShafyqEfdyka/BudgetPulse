@@ -31,6 +31,7 @@ interface UserPreferencesRepository {
     val currencyRateFromIdr: Flow<Double> get() = flowOf(1.0)
     val cachedRatesJson: Flow<String> get() = flowOf("")
     val themePreference: Flow<String>
+    val isDarkMode: Flow<Boolean> get() = flowOf(false)
     val notificationsEnabled: Flow<Boolean>
     val paydayStartDay: Flow<Int>
     val lastProcessedPaydayCycle: Flow<String>
@@ -54,6 +55,7 @@ interface UserPreferencesRepository {
     suspend fun setSelectedCurrency(code: String, symbol: String, rateFromIdr: Double) {}
     suspend fun setCachedRatesJson(json: String) {}
     suspend fun setThemePreference(theme: String)
+    suspend fun setDarkMode(enabled: Boolean) {}
     suspend fun setNotificationsEnabled(enabled: Boolean)
     suspend fun setPaydayStartDay(day: Int)
     suspend fun setLastProcessedPaydayCycle(cycleKey: String)
@@ -78,6 +80,7 @@ class UserPreferencesRepositoryImpl(context: Context) : UserPreferencesRepositor
         private val KEY_CURRENCY_RATE_FROM_IDR = doublePreferencesKey("currency_rate_from_idr")
         private val KEY_CACHED_RATES_JSON = stringPreferencesKey("cached_rates_json")
         private val KEY_THEME_PREFERENCE = stringPreferencesKey("theme_preference")
+        private val KEY_IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
         private val KEY_NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         private val KEY_PAYDAY_START_DAY = intPreferencesKey("payday_start_day")
         private val KEY_LAST_PROCESSED_PAYDAY_CYCLE = stringPreferencesKey("last_processed_payday_cycle")
@@ -149,6 +152,12 @@ class UserPreferencesRepositoryImpl(context: Context) : UserPreferencesRepositor
         .catch { emit(emptyPreferences()) }
         .map { preferences ->
             preferences[KEY_THEME_PREFERENCE] ?: "SYSTEM"
+        }
+
+    override val isDarkMode: Flow<Boolean> = appContext.dataStore.data
+        .catch { emit(emptyPreferences()) }
+        .map { preferences ->
+            preferences[KEY_IS_DARK_MODE] ?: false
         }
 
     override val notificationsEnabled: Flow<Boolean> = appContext.dataStore.data
@@ -336,6 +345,12 @@ class UserPreferencesRepositoryImpl(context: Context) : UserPreferencesRepositor
     override suspend fun setThemePreference(theme: String) {
         appContext.dataStore.edit { preferences ->
             preferences[KEY_THEME_PREFERENCE] = theme
+        }
+    }
+
+    override suspend fun setDarkMode(enabled: Boolean) {
+        appContext.dataStore.edit { preferences ->
+            preferences[KEY_IS_DARK_MODE] = enabled
         }
     }
 

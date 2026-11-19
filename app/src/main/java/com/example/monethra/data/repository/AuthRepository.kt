@@ -25,7 +25,7 @@ class AuthRepository(
         const val SESSION_TIMEOUT_MS = 5 * 60 * 1000L // 5 minutes
         const val DEMO_EMAIL = "monthra@andro.app"
         const val DEMO_PASSWORD = "1234"
-        const val DEMO_NAME = "Monethra Demo"
+        const val DEMO_NAME = "BudgetPulse Demo"
     }
 
     @get:JvmName("getCurrentUserProperty")

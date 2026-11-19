@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,11 +70,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.monethra.R
-import com.example.monethra.ui.theme.DeepIndigo
-import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.MonethraPastelPalette
-import com.example.monethra.ui.theme.MonethraTheme
-import com.example.monethra.ui.theme.PastelPeriwinkle
+import com.example.monethra.ui.theme.BudgetPulseTheme
+import com.example.monethra.ui.theme.rememberMonochromeBackgroundGradient
 import com.example.monethra.viewmodel.AuthViewModel
 import com.example.monethra.viewmodel.LoginUiState
 
@@ -83,7 +82,7 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundBrush: Brush = remember { MonethraPastelPalette.getRandomThreeColorGradient() },
+    backgroundBrush: Brush? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
@@ -113,12 +112,13 @@ fun LoginContent(
     onLoginClick: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundBrush: Brush = remember { MonethraPastelPalette.getRandomThreeColorGradient() },
+    backgroundBrush: Brush? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val displayError = state.errorMessage ?: state.generalError
+    val effectiveBackgroundBrush = backgroundBrush ?: rememberMonochromeBackgroundGradient()
 
     LaunchedEffect(displayError) {
         if (!displayError.isNullOrBlank()) {
@@ -132,13 +132,13 @@ fun LoginContent(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 CompositionLocalProvider(
-                    LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+                    LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.inverseOnSurface),
                 ) {
                     Snackbar(
                         snackbarData = data,
-                        containerColor = DeepIndigo,
-                        contentColor = Color.White,
-                        actionColor = PastelPeriwinkle,
+                        containerColor = MaterialTheme.colorScheme.inverseSurface,
+                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        actionColor = MaterialTheme.colorScheme.inverseOnSurface,
                         shape = RoundedCornerShape(12.dp),
                     )
                 }
@@ -148,7 +148,7 @@ fun LoginContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = backgroundBrush)
+                .background(brush = effectiveBackgroundBrush)
                 .padding(innerPadding)
                 .imePadding(),
             contentAlignment = Alignment.Center,
@@ -161,13 +161,13 @@ fun LoginContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                // Unified 172.dp Moth Logo with Shared Element Transition
+                // Unified 172.dp Geometric BP Logo with Shared Element Transition
                 val baseModifier = Modifier.size(172.dp)
 
-                val mothModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                val bpModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                     with(sharedTransitionScope) {
                         baseModifier.sharedElement(
-                            rememberSharedContentState(key = "monethra_moth_logo"),
+                            rememberSharedContentState(key = "budgetpulse_logo"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ -> tween(600, easing = FastOutSlowInEasing) },
                         )
@@ -177,10 +177,11 @@ fun LoginContent(
                 }
 
                 Image(
-                    painter = painterResource(id = R.drawable.app_logo),
-                    contentDescription = "MONETHRA Logo",
+                    painter = painterResource(id = R.drawable.logo_no_bg),
+                    contentDescription = "BudgetPulse Logo",
                     contentScale = ContentScale.Fit,
-                    modifier = mothModifier,
+                    modifier = bpModifier,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -189,30 +190,31 @@ fun LoginContent(
                     text = "Welcome Back",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DeepIndigo,
+                    color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = 0.5.sp,
                 )
 
                 Text(
                     text = "Sign in to continue tracking your finances",
                     fontSize = 14.sp,
-                    color = Color(0xFF4B5563),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
                 )
 
-                // Elevated Semi-Translucent Card Container
+                // Elevated Monochrome Card Container with Subtle 1.dp Border
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(
-                            elevation = 12.dp,
+                            elevation = 8.dp,
                             shape = RoundedCornerShape(24.dp),
-                            ambientColor = DeepIndigo.copy(alpha = 0.15f),
-                            spotColor = DeepIndigo.copy(alpha = 0.2f),
+                            ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                         ),
                     shape = RoundedCornerShape(24.dp),
-                    color = Color.White.copy(alpha = 0.94f),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 ) {
                     Column(
                         modifier = Modifier
@@ -227,13 +229,14 @@ fun LoginContent(
                                     .fillMaxWidth()
                                     .padding(bottom = 16.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFFFDE8E8),
+                                    containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
                                 ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f)),
                                 shape = RoundedCornerShape(12.dp),
                             ) {
                                 Text(
                                     text = displayError,
-                                    color = ExpenseRed,
+                                    color = MaterialTheme.colorScheme.error,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier.padding(12.dp),
@@ -245,16 +248,16 @@ fun LoginContent(
                         OutlinedTextField(
                             value = state.email,
                             onValueChange = onEmailChanged,
-                            label = { Text("Email Address", color = DeepIndigo) },
+                            label = { Text("Email Address", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Email,
                                     contentDescription = "Email Icon",
-                                    tint = DeepIndigo,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             isError = state.emailError != null,
-                            supportingText = state.emailError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.emailError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
@@ -262,10 +265,10 @@ fun LoginContent(
                             ),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -276,12 +279,12 @@ fun LoginContent(
                         OutlinedTextField(
                             value = state.password,
                             onValueChange = onPasswordChanged,
-                            label = { Text("Password", color = DeepIndigo) },
+                            label = { Text("Password", color = MaterialTheme.colorScheme.onSurface) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Lock,
                                     contentDescription = "Password Icon",
-                                    tint = DeepIndigo,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                 )
                             },
                             trailingIcon = {
@@ -289,13 +292,13 @@ fun LoginContent(
                                     Icon(
                                         imageVector = if (state.isPasswordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
                                         contentDescription = if (state.isPasswordVisible) "Hide password" else "Show password",
-                                        tint = DeepIndigo,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
                             },
                             visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             isError = state.passwordError != null,
-                            supportingText = state.passwordError?.let { { Text(it, color = ExpenseRed) } },
+                            supportingText = state.passwordError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
@@ -303,17 +306,17 @@ fun LoginContent(
                             ),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PastelPeriwinkle,
-                                unfocusedBorderColor = Color(0xFFD1D5DB),
-                                focusedTextColor = DeepIndigo,
-                                unfocusedTextColor = DeepIndigo,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             ),
                             modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // High-Contrast CTA Button
+                        // High-Contrast Primary CTA Button
                         Button(
                             onClick = onLoginClick,
                             enabled = !state.isLoading,
@@ -322,20 +325,20 @@ fun LoginContent(
                                 .height(52.dp),
                             shape = RoundedCornerShape(26.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = DeepIndigo,
-                                contentColor = Color.White,
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
                             ),
                         ) {
                             if (state.isLoading) {
                                 CircularProgressIndicator(
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     strokeWidth = 2.dp,
                                     modifier = Modifier.size(24.dp),
                                 )
                             } else {
                                 Text(
                                     text = "Log In",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp,
                                 )
@@ -352,14 +355,14 @@ fun LoginContent(
                             Text(
                                 text = "Don't have an account?",
                                 fontSize = 14.sp,
-                                color = Color(0xFF6B7280),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             TextButton(onClick = onNavigateToSignUp) {
                                 Text(
                                     text = "Sign Up",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = DeepIndigo,
+                                    color = MaterialTheme.colorScheme.primary,
                                 )
                             }
                         }
@@ -373,7 +376,22 @@ fun LoginContent(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    MonethraTheme {
+    BudgetPulseTheme {
+        LoginContent(
+            state = LoginUiState(email = "user@example.com"),
+            onEmailChanged = {},
+            onPasswordChanged = {},
+            onTogglePasswordVisibility = {},
+            onLoginClick = {},
+            onNavigateToSignUp = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenDarkPreview() {
+    BudgetPulseTheme(darkTheme = true) {
         LoginContent(
             state = LoginUiState(email = "user@example.com"),
             onEmailChanged = {},

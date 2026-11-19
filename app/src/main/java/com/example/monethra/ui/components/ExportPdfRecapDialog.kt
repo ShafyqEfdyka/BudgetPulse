@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,14 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.monethra.ui.theme.DeepIndigo
-import com.example.monethra.ui.theme.PastelPeriwinkle
-import com.example.monethra.ui.theme.PrimaryText
-import com.example.monethra.ui.theme.SecondaryText
 import com.example.monethra.utils.DateUtils
 
 @Composable
@@ -57,17 +53,17 @@ fun ExportPdfRecapDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(28.dp),
-        containerColor = Color(0xFFF8FAFC),
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.PictureAsPdf,
                     contentDescription = null,
-                    tint = Color(0xFF2563EB),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Export Recap as PDF", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = PrimaryText)
+                Text("Export Recap as PDF", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
             }
         },
         text = {
@@ -75,7 +71,7 @@ fun ExportPdfRecapDialog(
                 Text(
                     text = "Select period cycle for the financial recap PDF export:",
                     fontSize = 13.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
@@ -83,7 +79,7 @@ fun ExportPdfRecapDialog(
                     text = "Cycle Period: $cycleLabel",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
@@ -107,7 +103,7 @@ fun ExportPdfRecapDialog(
                         text = "${monthNames[selectedMonth - 1]} $selectedYear",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     TextButton(onClick = {
@@ -130,14 +126,14 @@ fun ExportPdfRecapDialog(
                 },
                 enabled = !isExporting,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PastelPeriwinkle,
-                    contentColor = DeepIndigo
+                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 if (isExporting) {
                     CircularProgressIndicator(
-                        color = DeepIndigo,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(20.dp)
                     )
@@ -145,13 +141,13 @@ fun ExportPdfRecapDialog(
                     Icon(
                         imageVector = Icons.Default.PictureAsPdf,
                         contentDescription = null,
-                        tint = DeepIndigo,
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Export & Share PDF",
-                        color = DeepIndigo,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 15.sp
                     )

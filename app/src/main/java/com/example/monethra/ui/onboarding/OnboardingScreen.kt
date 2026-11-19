@@ -160,7 +160,7 @@ fun OnboardingScreen(
                         text = item.title,
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )
 
@@ -190,9 +190,9 @@ fun OnboardingScreen(
                 ) {
                     repeat(pages.size) { iteration ->
                         val color = if (pagerState.currentPage == iteration) {
-                            PrimaryText
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            PrimaryText.copy(alpha = 0.2f)
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                         }
                         val width = if (pagerState.currentPage == iteration) 24.dp else 8.dp
                         Box(
@@ -224,8 +224,8 @@ fun OnboardingScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryText,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Row(
@@ -235,13 +235,15 @@ fun OnboardingScreen(
                         Text(
                             text = if (pagerState.currentPage == pages.size - 1) "Get Started" else "Next",
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                         if (pagerState.currentPage < pages.size - 1) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                                contentDescription = "Next"
+                                contentDescription = "Next",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }

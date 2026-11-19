@@ -273,7 +273,7 @@ class AuthViewModelTest {
         assertTrue(state.isSuccess)
         assertTrue(callbackCalled)
         assertTrue(prefsRepo.isLoggedInFlow.value)
-        assertEquals("Monethra Demo", prefsRepo.userNameFlow.value)
+        assertEquals("BudgetPulse Demo", prefsRepo.userNameFlow.value)
     }
 
     @Test

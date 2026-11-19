@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,9 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.monethra.ui.theme.PrimaryText
-import com.example.monethra.ui.theme.SecondaryText
-import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
 
 data class DonutSliceData(
@@ -113,7 +111,7 @@ fun DonutChart(
                 Text(
                     text = "Total Spent",
                     fontSize = 11.sp,
-                    color = SecondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(2.dp))
@@ -121,7 +119,7 @@ fun DonutChart(
                     text = CurrencyFormatter.formatIdr(totalAmount, currencySymbol),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     textAlign = TextAlign.Center
                 )
@@ -141,7 +139,7 @@ fun DonutChart(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(WarmIvory)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Box(
@@ -155,7 +153,7 @@ fun DonutChart(
                             text = "${slice.categoryName} (${String.format(java.util.Locale.forLanguageTag("id-ID"), "%.1f", slice.percentage)}%)",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryText
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -164,7 +162,7 @@ fun DonutChart(
             Text(
                 text = "No expenses recorded this month",
                 fontSize = 13.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }

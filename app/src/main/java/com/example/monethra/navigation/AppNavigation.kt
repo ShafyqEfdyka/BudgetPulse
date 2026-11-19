@@ -45,6 +45,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import com.example.monethra.ui.theme.MonethraPastelPalette
+import com.example.monethra.ui.theme.rememberMonochromeBackgroundGradient
 import com.example.monethra.MonethraApplication
 import com.example.monethra.data.repository.CurrencyRepository
 import com.example.monethra.utils.CurrencyConfig
@@ -237,7 +238,7 @@ fun AppNavHost(
     onNavigateToDestination: (TopLevelDestination) -> Unit,
     onLogout: () -> Unit = {}
 ) {
-    val sessionGradient = remember { MonethraPastelPalette.getRandomThreeColorGradient() }
+    val sessionGradient = rememberMonochromeBackgroundGradient()
 
     SharedTransitionLayout {
         NavHost(
@@ -330,6 +331,7 @@ fun AppNavHost(
                     )
                     SignUpScreen(
                         viewModel = authViewModel,
+                        backgroundBrush = sessionGradient,
                         onSignUpSuccess = {
                             navController.navigate(Routes.DASHBOARD) {
                                 popUpTo(Routes.SIGNUP) { inclusive = true }

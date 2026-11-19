@@ -35,10 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.IncomeGreen
-import com.example.monethra.ui.theme.PrimaryText
-import com.example.monethra.ui.theme.SecondaryText
+import androidx.compose.ui.graphics.toArgb
 import kotlin.math.max
 
 data class BarChartGroup(
@@ -53,8 +50,8 @@ fun BarChart(
     modifier: Modifier = Modifier,
     height: Dp = 220.dp,
     currencySymbol: String = "Rp",
-    incomeColor: Color = IncomeGreen,
-    expenseColor: Color = ExpenseRed
+    incomeColor: Color = MaterialTheme.colorScheme.primary,
+    expenseColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
 ) {
     val animProgress = remember { Animatable(0f) }
 
@@ -92,7 +89,7 @@ fun BarChart(
                 Text(
                     text = "Income",
                     fontSize = 12.sp,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -108,7 +105,7 @@ fun BarChart(
                 Text(
                     text = "Expense",
                     fontSize = 12.sp,
-                    color = PrimaryText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -128,7 +125,7 @@ fun BarChart(
                 Text(
                     text = "No income or expense data for this month",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else {
@@ -170,7 +167,7 @@ fun BarChart(
                     // Y Label
                     drawContext.canvas.nativeCanvas.apply {
                         val paint = android.graphics.Paint().apply {
-                            color = labelTextColor.hashCode()
+                            color = labelTextColor.toArgb()
                             textSize = 10.sp.toPx()
                             textAlign = android.graphics.Paint.Align.RIGHT
                             isAntiAlias = true
@@ -230,7 +227,7 @@ fun BarChart(
                     // Draw X Label
                     drawContext.canvas.nativeCanvas.apply {
                         val paint = android.graphics.Paint().apply {
-                            color = labelTextColor.hashCode()
+                            color = labelTextColor.toArgb()
                             textSize = 11.sp.toPx()
                             textAlign = android.graphics.Paint.Align.CENTER
                             isAntiAlias = true

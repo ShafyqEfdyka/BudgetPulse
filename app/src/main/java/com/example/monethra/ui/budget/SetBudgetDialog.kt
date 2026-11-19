@@ -41,9 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.monethra.ui.transactions.CategoryData
 import com.example.monethra.ui.theme.ExpenseRed
+import com.example.monethra.ui.theme.IvoryWhite
 import com.example.monethra.ui.theme.PowderBlue
 import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SecondaryText
+import com.example.monethra.ui.theme.SmokyBlack
 import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.utils.LocalCurrencyConfig
@@ -79,7 +81,7 @@ fun SetTotalBudgetDialog(
             Text(
                 text = "Set Monthly Budget",
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -87,7 +89,7 @@ fun SetTotalBudgetDialog(
                 Text(
                     text = "Enter your overall spending limit for this month.",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -138,17 +140,21 @@ fun SetTotalBudgetDialog(
                     onSave(amountInIdr)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PowderBlue,
-                    contentColor = PrimaryText
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Save", fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Save",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = PrimaryText)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -190,7 +196,7 @@ fun AddEditCategoryBudgetDialog(
             Text(
                 text = if (isEditing) "Edit Category Budget" else "Add Category Budget",
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -198,7 +204,7 @@ fun AddEditCategoryBudgetDialog(
                 Text(
                     text = "Select a category and set its monthly allocation limit.",
                     fontSize = 13.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -208,7 +214,7 @@ fun AddEditCategoryBudgetDialog(
                     text = "Category",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryText
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
 
@@ -220,7 +226,7 @@ fun AddEditCategoryBudgetDialog(
                     presetCategories.forEach { cat ->
                         val isSelected = categoryName.equals(cat.name, ignoreCase = true)
                         val borderModifier = if (isSelected) {
-                            Modifier.border(2.dp, PrimaryText, RoundedCornerShape(10.dp))
+                            Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
                         } else {
                             Modifier
                         }
@@ -229,7 +235,7 @@ fun AddEditCategoryBudgetDialog(
                             modifier = Modifier
                                 .then(borderModifier)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(if (isSelected) cat.color else WarmIvory)
+                                .background(if (isSelected) cat.color else MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable {
                                     categoryName = cat.name
                                     localError = null
@@ -241,14 +247,14 @@ fun AddEditCategoryBudgetDialog(
                                 imageVector = cat.icon,
                                 contentDescription = cat.name,
                                 modifier = Modifier.size(16.dp),
-                                tint = PrimaryText
+                                tint = if (isSelected) PrimaryText else MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = cat.name,
                                 fontSize = 11.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = PrimaryText,
+                                color = if (isSelected) PrimaryText else MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -335,18 +341,22 @@ fun AddEditCategoryBudgetDialog(
                         onSave(categoryName, amountInIdr)
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PowderBlue,
-                        contentColor = PrimaryText
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text("Save", fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Save",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = PrimaryText)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,

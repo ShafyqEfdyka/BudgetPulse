@@ -76,11 +76,13 @@ import com.example.monethra.ui.theme.ButterCream
 import com.example.monethra.ui.theme.DustyPink
 import com.example.monethra.ui.theme.ExpenseRed
 import com.example.monethra.ui.theme.IncomeGreen
+import com.example.monethra.ui.theme.IvoryWhite
 import com.example.monethra.ui.theme.MonethraTheme
 import com.example.monethra.ui.theme.PowderBlue
 import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SageGreen
 import com.example.monethra.ui.theme.SecondaryText
+import com.example.monethra.ui.theme.SmokyBlack
 import com.example.monethra.ui.theme.SoftLavender
 import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
@@ -120,7 +122,12 @@ object CategoryData {
 
     fun getIconForCategory(categoryName: String): ImageVector {
         val all = incomeCategories + expenseCategories
-        return all.find { it.name.equals(categoryName, ignoreCase = true) }?.icon ?: Icons.Rounded.Category
+        val found = all.find { it.name.equals(categoryName, ignoreCase = true) }?.icon
+        if (found != null) return found
+        return when (categoryName.trim().lowercase()) {
+            "food & beverages", "food & drinks", "food", "f&b" -> Icons.Rounded.Fastfood
+            else -> Icons.Rounded.Category
+        }
     }
 
     fun getColorForCategory(categoryName: String): Color {
@@ -251,7 +258,7 @@ fun AddEditTransactionForm(
             text = if (isEditing) "Edit Transaction" else "Add Transaction",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = PrimaryText,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
@@ -262,7 +269,7 @@ fun AddEditTransactionForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(WarmIvory)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(4.dp)
         ) {
             val isIncome = selectedType == "INCOME"
@@ -286,7 +293,7 @@ fun AddEditTransactionForm(
                     text = "Income",
                     fontSize = 14.sp,
                     fontWeight = if (isIncome) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isIncome) IncomeGreen else SecondaryText
+                    color = if (isIncome) IncomeGreen else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -308,7 +315,7 @@ fun AddEditTransactionForm(
                     text = "Expense",
                     fontSize = 14.sp,
                     fontWeight = if (isExpense) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isExpense) ExpenseRed else SecondaryText
+                    color = if (isExpense) ExpenseRed else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -357,7 +364,7 @@ fun AddEditTransactionForm(
             text = "Category",
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = PrimaryText
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -369,7 +376,7 @@ fun AddEditTransactionForm(
             currentCategories.forEach { cat ->
                 val isSelected = selectedCategory == cat.name
                 val borderModifier = if (isSelected) {
-                    Modifier.border(2.dp, PrimaryText, RoundedCornerShape(14.dp))
+                    Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(14.dp))
                 } else {
                     Modifier
                 }
@@ -378,7 +385,7 @@ fun AddEditTransactionForm(
                     modifier = Modifier
                         .then(borderModifier)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(if (isSelected) cat.color else WarmIvory)
+                        .background(if (isSelected) cat.color else MaterialTheme.colorScheme.surfaceVariant)
                         .clickable {
                             selectedCategory = cat.name
                             localError = null
@@ -390,14 +397,14 @@ fun AddEditTransactionForm(
                         imageVector = cat.icon,
                         contentDescription = cat.name,
                         modifier = Modifier.size(18.dp),
-                        tint = PrimaryText
+                        tint = if (isSelected) PrimaryText else MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = cat.name,
                         fontSize = 12.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = PrimaryText,
+                        color = if (isSelected) PrimaryText else MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -412,14 +419,14 @@ fun AddEditTransactionForm(
             text = "Date",
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = PrimaryText
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(6.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(WarmIvory)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .clickable { datePickerDialog.show() }
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -429,12 +436,12 @@ fun AddEditTransactionForm(
                 text = DateUtils.formatDate(selectedDate, "EEEE, dd MMMM yyyy"),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
             Icon(
                 imageVector = Icons.Rounded.CalendarToday,
                 contentDescription = "Select Date",
-                tint = PrimaryText,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -478,7 +485,7 @@ fun AddEditTransactionForm(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(14.dp)
             ) {
-                Text("Cancel", color = PrimaryText)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
             }
 
             Button(
@@ -516,13 +523,14 @@ fun AddEditTransactionForm(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PowderBlue,
-                    contentColor = PrimaryText
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
                     text = if (isEditing) "Update" else "Save",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

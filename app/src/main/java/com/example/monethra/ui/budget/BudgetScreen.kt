@@ -1,5 +1,6 @@
 package com.example.monethra.ui.budget
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import java.util.Locale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,14 +58,16 @@ import com.example.monethra.MonethraApplication
 import com.example.monethra.ui.theme.ButterCream
 import com.example.monethra.ui.theme.DustyPink
 import com.example.monethra.ui.theme.ExpenseRed
-import com.example.monethra.ui.theme.IncomeGreen
+import com.example.monethra.ui.theme.IvoryWhite
 import com.example.monethra.ui.theme.MonethraTheme
 import com.example.monethra.ui.theme.PowderBlue
 import com.example.monethra.ui.theme.PrimaryText
 import com.example.monethra.ui.theme.SageGreen
 import com.example.monethra.ui.theme.SecondaryText
+import com.example.monethra.ui.theme.SmokyBlack
 import com.example.monethra.ui.theme.SoftLavender
 import com.example.monethra.ui.theme.WarmIvory
+import com.example.monethra.ui.theme.getCategoryBadgeIconTint
 import com.example.monethra.ui.transactions.CategoryData
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.viewmodel.AlertLevel
@@ -143,7 +147,7 @@ fun BudgetContent(
                         text = "Budget & Limits",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     // Month Selector: < MMMM yyyy >
@@ -180,24 +184,30 @@ fun BudgetContent(
                         text = "Category Allocations",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     Button(
                         onClick = onOpenAddCategoryDialog,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PowderBlue,
-                            contentColor = PrimaryText
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Add Limit", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Add Limit",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
 
@@ -292,7 +302,7 @@ fun MonthSelectorHeader(
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                 contentDescription = "Previous Month",
-                tint = PrimaryText
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -300,7 +310,7 @@ fun MonthSelectorHeader(
             text = monthYearText,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = PrimaryText,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 4.dp)
         )
 
@@ -311,7 +321,7 @@ fun MonthSelectorHeader(
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = "Next Month",
-                tint = PrimaryText
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -325,7 +335,8 @@ fun BudgetSummaryCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = PowderBlue),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -340,14 +351,14 @@ fun BudgetSummaryCard(
                         text = "Total Monthly Budget",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SecondaryText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = CurrencyFormatter.formatIdr(uiState.totalMonthlyBudget, uiState.currencySymbol),
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryText
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -355,14 +366,14 @@ fun BudgetSummaryCard(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.7f))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable { onEditBudgetClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Edit,
                         contentDescription = "Edit Budget",
-                        tint = PrimaryText,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -379,16 +390,13 @@ fun BudgetSummaryCard(
                 SubSummaryBox(
                     title = "Allocated",
                     value = CurrencyFormatter.formatIdr(uiState.totalAllocated, uiState.currencySymbol),
-                    bgColor = SageGreen,
                     modifier = Modifier.weight(1f)
                 )
 
                 // Unallocated
-                val unallocatedColor = if (uiState.unallocatedBudget < 0) DustyPink else ButterCream
                 SubSummaryBox(
                     title = "Unallocated",
                     value = CurrencyFormatter.formatIdr(uiState.unallocatedBudget, uiState.currencySymbol),
-                    bgColor = unallocatedColor,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -403,16 +411,13 @@ fun BudgetSummaryCard(
                 SubSummaryBox(
                     title = "Actual Spent",
                     value = CurrencyFormatter.formatIdr(uiState.totalActualExpenses, uiState.currencySymbol),
-                    bgColor = DustyPink,
                     modifier = Modifier.weight(1f)
                 )
 
                 // Total Remaining
-                val remainingColor = if (uiState.totalRemainingBudget < 0) ExpenseRed.copy(alpha = 0.2f) else SoftLavender
                 SubSummaryBox(
                     title = "Remaining",
                     value = CurrencyFormatter.formatIdr(uiState.totalRemainingBudget, uiState.currencySymbol),
-                    bgColor = remainingColor,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -424,13 +429,12 @@ fun BudgetSummaryCard(
 fun SubSummaryBox(
     title: String,
     value: String,
-    bgColor: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
-            .background(bgColor)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(12.dp)
     ) {
         Column {
@@ -438,7 +442,7 @@ fun SubSummaryBox(
                 text = title,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -447,7 +451,7 @@ fun SubSummaryBox(
                 text = value,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -527,11 +531,9 @@ fun CategoryAllocationItem(
     val categoryIcon = CategoryData.getIconForCategory(allocation.categoryName)
     val categoryColor = CategoryData.getColorForCategory(allocation.categoryName)
 
-    val progressColor = when {
-        allocation.percentage >= 100f -> ExpenseRed
-        allocation.percentage >= 75f -> Color(0xFFFFA726) // Amber
-        else -> IncomeGreen
-    }
+    val isOverBudget = allocation.percentage >= 100f
+    val percentageColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+    val progressColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
 
     val clampedProgress = (allocation.percentage / 100f).coerceIn(0f, 1f)
 
@@ -541,6 +543,7 @@ fun CategoryAllocationItem(
             .clickable { onEditClick() },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -563,7 +566,7 @@ fun CategoryAllocationItem(
                         Icon(
                             imageVector = categoryIcon,
                             contentDescription = allocation.categoryName,
-                            tint = PrimaryText,
+                            tint = getCategoryBadgeIconTint(categoryColor),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -573,7 +576,7 @@ fun CategoryAllocationItem(
                             text = allocation.categoryName,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryText,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -581,7 +584,7 @@ fun CategoryAllocationItem(
                         Text(
                             text = "Limit: ${CurrencyFormatter.formatIdr(allocation.allocatedAmount, currencySymbol)}",
                             fontSize = 12.sp,
-                            color = SecondaryText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -590,10 +593,10 @@ fun CategoryAllocationItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = String.format("%.0f%%", allocation.percentage),
+                        text = String.format(Locale.ROOT, "%.0f%%", allocation.percentage),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = progressColor
+                        color = percentageColor
                     )
 
                     IconButton(
@@ -603,7 +606,7 @@ fun CategoryAllocationItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             contentDescription = "Edit Limit",
-                            tint = SecondaryText,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -620,7 +623,7 @@ fun CategoryAllocationItem(
                     .height(8.dp)
                     .clip(CircleShape),
                 color = progressColor,
-                trackColor = WarmIvory,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
                 strokeCap = StrokeCap.Round
             )
 
@@ -634,13 +637,13 @@ fun CategoryAllocationItem(
                 Text(
                     text = "Spent: ${CurrencyFormatter.formatIdr(allocation.spentAmount, currencySymbol)}",
                     fontSize = 12.sp,
-                    color = SecondaryText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "Remaining: ${CurrencyFormatter.formatIdr(allocation.remainingAmount, currencySymbol)}",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = if (allocation.remainingAmount < 0) ExpenseRed else PrimaryText
+                    color = if (allocation.remainingAmount < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -667,13 +670,13 @@ fun EmptyCategoryAllocationsState(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(WarmIvory),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Rounded.PieChart,
                     contentDescription = null,
-                    tint = SecondaryText,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -684,7 +687,7 @@ fun EmptyCategoryAllocationsState(
                 text = "No category budgets set yet",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -692,7 +695,7 @@ fun EmptyCategoryAllocationsState(
             Text(
                 text = "Set spending limits per category to get alerts when you approach your budget.",
                 fontSize = 12.sp,
-                color = SecondaryText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -702,10 +705,11 @@ fun EmptyCategoryAllocationsState(
                 Icon(
                     imageVector = Icons.Rounded.Add,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Add Category Limit", fontWeight = FontWeight.Bold, color = PrimaryText)
+                Text("Add Category Limit", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -730,6 +734,42 @@ fun BudgetContentPreview() {
                 ),
                 budgetAlerts = listOf(
                     BudgetAlert("Food & Drinks", 1500000L, 1600000L, 106.6f, AlertLevel.EXCEEDED_100, "Exceeded budget limit: Food & Drinks is at 107%")
+                )
+            ),
+            onPreviousMonth = {},
+            onNextMonth = {},
+            onOpenSetTotalBudgetDialog = {},
+            onCloseSetTotalBudgetDialog = {},
+            onSaveTotalBudget = {},
+            onOpenAddCategoryDialog = {},
+            onOpenEditCategoryDialog = {},
+            onCloseCategoryDialog = {},
+            onSaveCategoryAllocation = { _, _ -> },
+            onDeleteCategoryAllocation = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun BudgetContentDarkPreview() {
+    MonethraTheme(darkTheme = true) {
+        BudgetContent(
+            uiState = BudgetUiState(
+                monthYearText = "October 2023",
+                totalMonthlyBudget = 5000000L,
+                totalAllocated = 3500000L,
+                unallocatedBudget = 1500000L,
+                totalActualExpenses = 2800000L,
+                totalRemainingBudget = 2200000L,
+                categoryAllocations = listOf(
+                    CategoryAllocationUiModel("Food & Beverages", 1500000L, 1600000L, -100000L, 106.6f, AlertLevel.EXCEEDED_100),
+                    CategoryAllocationUiModel("Bills & Utilities", 800000L, 720000L, 80000L, 90f, AlertLevel.NEAR_90),
+                    CategoryAllocationUiModel("Transportation", 800000L, 720000L, 80000L, 90f, AlertLevel.NEAR_90),
+                    CategoryAllocationUiModel("Shopping", 1000000L, 400000L, 600000L, 40f, AlertLevel.NONE)
+                ),
+                budgetAlerts = listOf(
+                    BudgetAlert("Food & Beverages", 1500000L, 1600000L, 106.6f, AlertLevel.EXCEEDED_100, "Exceeded budget limit: Food & Beverages is at 107%")
                 )
             ),
             onPreviousMonth = {},

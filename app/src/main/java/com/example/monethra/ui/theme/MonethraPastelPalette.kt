@@ -1,48 +1,75 @@
 package com.example.monethra.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 /**
- * Curated Monethra Pastel Color Library
+ * BudgetPulse Monochrome Palette (formerly MonethraPastelPalette).
  *
- * Soft, cohesive pastel colors established across Monethra's cards, badges, and surfaces.
+ * Provides smooth monochrome gradients and subtle container fills
+ * blending Ivory White (#F4F0E0) and tonal shades in Light Mode,
+ * and Smoky Black (#100C08) and tonal shades in Dark Mode.
  */
 object MonethraPastelPalette {
-    val PastelPeriwinkle = Color(0xFF9FA0FF) // Primary Brand Accent
-    val SoftLavenderTint = Color(0xFFEAE6F8) // Smart Insight / Active Pill
-    val PastelMintGreen = Color(0xFFDDF3E4)  // Income Card
-    val PastelBlushPink = Color(0xFFFCE4E6)  // Expense Card
-    val PastelButterCream = Color(0xFFFEF3D6) // Remaining Budget Card
-    val PastelSkyBlue = Color(0xFFDCEAFB)    // Total Balance Card / Notification Track
-    val SoftLilacMist = Color(0xFFD6D2F2)    // Secondary Accent
-    val WarmAlabasterPastel = Color(0xFFF4F1EA) // App Surface
+    val SmokyBlack = Color(0xFF100C08)
+    val IvoryWhite = Color(0xFFF4F0E0)
+    val WarmCream = Color(0xFFEBE5CE)
+    val SoftSand = Color(0xFFE2DAC0)
+    val ElevatedSurface = Color(0xFFFAF8F0)
+    val MutedCharcoal = Color(0xFF4A453E)
 
-    /**
-     * All curated pastel palette colors.
-     */
+    // Remapped brand tokens
+    val PastelPeriwinkle = SmokyBlack
+    val SoftLavenderTint = WarmCream
+    val PastelMintGreen = IvoryWhite
+    val PastelBlushPink = SoftSand
+    val PastelButterCream = ElevatedSurface
+    val PastelSkyBlue = WarmCream
+    val SoftLilacMist = SoftSand
+    val WarmAlabasterPastel = IvoryWhite
+
     val allColors: List<Color> = listOf(
-        PastelPeriwinkle,
-        SoftLavenderTint,
-        PastelMintGreen,
-        PastelBlushPink,
-        PastelButterCream,
-        PastelSkyBlue,
-        SoftLilacMist,
-        WarmAlabasterPastel,
+        IvoryWhite,
+        WarmCream,
+        SoftSand,
+        ElevatedSurface,
     )
 
-    /**
-     * Returns a smooth, randomized 3-color pastel linear gradient brush
-     * selecting 3 distinct colors from [allColors].
-     */
-    fun getRandomThreeColorGradient(): Brush {
-        val selectedThreeColors = allColors.shuffled().take(3)
+    fun getMonochromeLinearGradient(darkTheme: Boolean = false): Brush {
+        val colors = if (darkTheme) {
+            listOf(
+                Color(0xFF100C08),
+                Color(0xFF18130E),
+                Color(0xFF211A13),
+            )
+        } else {
+            listOf(
+                Color(0xFFF4F0E0),
+                Color(0xFFEDE6CE),
+                Color(0xFFE4DBC0),
+            )
+        }
         return Brush.linearGradient(
-            colors = selectedThreeColors,
+            colors = colors,
             start = Offset(0f, 0f),
             end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
         )
+    }
+
+    fun getRandomThreeColorGradient(darkTheme: Boolean = false): Brush = getMonochromeLinearGradient(darkTheme)
+}
+
+typealias BudgetPulseMonochromePalette = MonethraPastelPalette
+
+@Composable
+fun rememberMonochromeBackgroundGradient(
+    darkTheme: Boolean = MaterialTheme.colorScheme.background == Color(0xFF100C08),
+): Brush {
+    return remember(darkTheme) {
+        MonethraPastelPalette.getMonochromeLinearGradient(darkTheme)
     }
 }

@@ -36,9 +36,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class ProfileUiState(
-    val userName: String = "Monethra User",
+    val userName: String = "BudgetPulse User",
     val userEmail: String? = null,
     val themePreference: String = "SYSTEM",
+    val isDarkMode: Boolean = false,
     val currencySymbol: String = "Rp",
     val currencyCode: String = "IDR",
     val currencyRate: Double = 1.0,
@@ -61,6 +62,7 @@ data class ProfileUiState(
 
 private data class PreferencesState(
     val theme: String,
+    val isDarkMode: Boolean,
     val currency: String,
     val currencyCode: String,
     val currencyRate: Double,
@@ -154,12 +156,14 @@ class ProfileViewModel @JvmOverloads constructor(
 
     private val preferencesFlow = combine(
         repository?.themePreference?.catch { emit("SYSTEM") } ?: flowOf("SYSTEM"),
+        repository?.isDarkMode?.catch { emit(false) } ?: flowOf(false),
         activeCurrencyFlow,
         repository?.notificationsEnabled?.catch { emit(true) } ?: flowOf(true),
         repository?.paydayStartDay?.catch { emit(1) } ?: flowOf(1)
-    ) { theme, currency, notifications, payday ->
+    ) { theme, isDark, currency, notifications, payday ->
         PreferencesState(
             theme = theme,
+            isDarkMode = isDark,
             currency = currency.symbol,
             currencyCode = currency.code,
             currencyRate = currency.rateFromIdr,
@@ -168,7 +172,7 @@ class ProfileViewModel @JvmOverloads constructor(
         )
     }
         .flowOn(ioDispatcher)
-        .catch { emit(PreferencesState("SYSTEM", "Rp", "IDR", 1.0, true, 1)) }
+        .catch { emit(PreferencesState("SYSTEM", false, "Rp", "IDR", 1.0, true, 1)) }
 
     private val dialogBooleans: Flow<List<Boolean>> = combine(
         listOf(
@@ -212,9 +216,10 @@ class ProfileViewModel @JvmOverloads constructor(
         dialogStateFlow
     ) { user, prefs, currencies, rates, dialogs ->
         ProfileUiState(
-            userName = user?.name?.ifBlank { "Monethra User" } ?: "Monethra User",
+            userName = user?.name?.ifBlank { "BudgetPulse User" } ?: "BudgetPulse User",
             userEmail = user?.email,
             themePreference = prefs.theme.ifBlank { "SYSTEM" },
+            isDarkMode = prefs.isDarkMode,
             currencySymbol = prefs.currency.ifBlank { "Rp" },
             currencyCode = prefs.currencyCode.ifBlank { "IDR" },
             currencyRate = prefs.currencyRate,
@@ -369,6 +374,16 @@ class ProfileViewModel @JvmOverloads constructor(
                 _userMessage.value = "Theme updated to ${theme.lowercase()}"
             } catch (e: Exception) {
                 _userMessage.value = e.localizedMessage ?: "Failed to update theme"
+            }
+        }
+    }
+
+    fun updateDarkMode(enabled: Boolean) {
+        viewModelScope.launch(ioDispatcher) {
+            try {
+                repository?.setDarkMode(enabled)
+            } catch (e: Exception) {
+                _userMessage.value = e.localizedMessage ?: "Failed to update dark mode"
             }
         }
     }

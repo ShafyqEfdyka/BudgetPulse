@@ -34,9 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.monethra.ui.theme.PrimaryText
-import com.example.monethra.ui.theme.SecondaryText
-import com.example.monethra.ui.theme.WarmIvory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,13 +63,13 @@ fun PaydaySelectionSheet(
                 text = "Select Payday Cycle",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryText
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Transactions and budget cycles will automatically align with this date.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -82,7 +79,7 @@ fun PaydaySelectionSheet(
                 text = "Quick Presets",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SecondaryText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -102,7 +99,7 @@ fun PaydaySelectionSheet(
                         selected = isSelected,
                         onClick = { selectedDay = day },
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else WarmIvory,
+                        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                         border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
                         modifier = Modifier.clip(RoundedCornerShape(12.dp))
                     ) {
@@ -110,7 +107,7 @@ fun PaydaySelectionSheet(
                             text = label,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else PrimaryText,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
                         )
                     }
@@ -124,7 +121,7 @@ fun PaydaySelectionSheet(
                 text = "Select Date",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SecondaryText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -163,13 +160,15 @@ fun PaydaySelectionSheet(
                     .padding(bottom = 16.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
                     text = "Confirm & Save",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(vertical = 6.dp)
                 )
             }
@@ -188,7 +187,7 @@ private fun DayTile(
         onClick = onClick,
         modifier = modifier.aspectRatio(1f),
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else WarmIvory,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = if (isSelected) 4.dp else 0.dp,
         shadowElevation = if (isSelected) 2.dp else 0.dp,
         border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null
@@ -200,7 +199,7 @@ private fun DayTile(
                 text = day.toString(),
                 fontSize = 14.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else PrimaryText
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
             )
         }
     }
