@@ -78,6 +78,7 @@ import com.example.monethra.ui.theme.SmokyBlack
 import com.example.monethra.ui.theme.WarmIvory
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.utils.DateUtils
+import com.example.monethra.utils.NotificationHelper
 import com.example.monethra.viewmodel.TransactionUiState
 import com.example.monethra.viewmodel.TransactionViewModel
 import com.example.monethra.viewmodel.TransactionViewModelFactory
@@ -91,7 +92,7 @@ fun TransactionsScreen(
     val context = LocalContext.current
     val app = context.applicationContext as MonethraApplication
     val transactionViewModel: TransactionViewModel = viewModel(
-        factory = TransactionViewModelFactory(app.financeRepository)
+        factory = TransactionViewModelFactory(app.financeRepository, NotificationHelper(context.applicationContext))
     )
 
     val uiState by transactionViewModel.uiState.collectAsState()

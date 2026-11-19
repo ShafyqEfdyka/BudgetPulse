@@ -2,6 +2,15 @@
 
 package com.example.monethra.ui.profile
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.example.monethra.utils.NotificationHelper
+import com.example.monethra.workers.DailyReminderWorker
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -138,6 +147,25 @@ fun ProfileScreen(
     val selectedCurrency = uiState.currencySymbol.ifBlank { "Rp" }
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val notificationHelper = remember { NotificationHelper(context) }
+
+    val enableNotificationsWithEffects: () -> Unit = {
+        viewModel.updateNotificationSettings(true)
+        DailyReminderWorker.schedule(context)
+        notificationHelper.showConfirmationNotification()
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            enableNotificationsWithEffects()
+        } else {
+            viewModel.updateNotificationSettings(false)
+            Log.d(NotificationHelper.TAG, "POST_NOTIFICATIONS permission denied by user")
+        }
+    }
+
     var isAboutDialogOpen by remember { mutableStateOf(false) }
     var isExportPdfDialogOpen by remember { mutableStateOf(false) }
     var isLogoutDialogOpen by remember { mutableStateOf(false) }
@@ -219,7 +247,26 @@ fun ProfileScreen(
                         paydayStartDay = paydayStartDay,
                         onCurrencyClick = { viewModel.openCurrencyDialog() },
                         onPaydayStartDayClick = { viewModel.openPaydayStartDayDialog() },
-                        onNotificationsToggle = { enabled -> viewModel.updateNotificationSettings(enabled) },
+                        onNotificationsToggle = { enabled ->
+                            if (enabled) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    val hasPerm = ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                    if (hasPerm) {
+                                        enableNotificationsWithEffects()
+                                    } else {
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
+                                } else {
+                                    enableNotificationsWithEffects()
+                                }
+                            } else {
+                                viewModel.updateNotificationSettings(false)
+                                DailyReminderWorker.cancel(context)
+                            }
+                        },
                         onDarkModeToggle = { enabled -> viewModel.updateDarkMode(enabled) }
                     )
 

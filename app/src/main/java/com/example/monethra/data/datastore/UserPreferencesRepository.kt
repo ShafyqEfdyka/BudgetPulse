@@ -163,7 +163,7 @@ class UserPreferencesRepositoryImpl(context: Context) : UserPreferencesRepositor
     override val notificationsEnabled: Flow<Boolean> = appContext.dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { preferences ->
-            preferences[KEY_NOTIFICATIONS_ENABLED] ?: true
+            preferences[KEY_NOTIFICATIONS_ENABLED] ?: false
         }
 
     override val paydayStartDay: Flow<Int> = appContext.dataStore.data

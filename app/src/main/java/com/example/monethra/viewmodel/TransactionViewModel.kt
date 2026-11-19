@@ -1,11 +1,13 @@
 package com.example.monethra.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.monethra.data.entity.TransactionEntity
 import com.example.monethra.data.repository.FinanceRepository
 import com.example.monethra.utils.CurrencyFormatter
+import com.example.monethra.utils.NotificationHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +43,8 @@ private data class FilterState(
 )
 
 class TransactionViewModel(
-    private val repository: FinanceRepository
+    private val repository: FinanceRepository,
+    private val notificationHelper: NotificationHelper? = null
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -209,6 +212,9 @@ class TransactionViewModel(
                 notes = notes?.trim().takeIf { !it.isNullOrBlank() }
             )
             repository.insertTransaction(entity)
+            if (entity.type.equals("EXPENSE", ignoreCase = true)) {
+                checkAndTriggerBudgetAlert(entity.category, entity.date)
+            }
             _saveSuccess.value = true
             closeAddEditSheet()
         }
@@ -255,6 +261,9 @@ class TransactionViewModel(
                 )
             }
             repository.updateTransaction(entity)
+            if (entity.type.equals("EXPENSE", ignoreCase = true)) {
+                checkAndTriggerBudgetAlert(entity.category, entity.date)
+            }
             _saveSuccess.value = true
             closeAddEditSheet()
         }
@@ -269,8 +278,59 @@ class TransactionViewModel(
                 transaction
             }
             repository.updateTransaction(entityToUpdate)
+            if (entityToUpdate.type.equals("EXPENSE", ignoreCase = true)) {
+                checkAndTriggerBudgetAlert(entityToUpdate.category, entityToUpdate.date)
+            }
             _saveSuccess.value = true
             closeAddEditSheet()
+        }
+    }
+
+    private suspend fun checkAndTriggerBudgetAlert(category: String, date: Long) {
+        try {
+            val isEnabled = repository.userPreferencesRepo.notificationsEnabled.first()
+            if (!isEnabled) {
+                NotificationHelper.logD(NotificationHelper.TAG, "Suppressed budget alert for $category: notifications disabled in settings")
+                return
+            }
+
+            val result = repository.getCategoryBudgetSpending(category, date)
+            if (result == null) {
+                NotificationHelper.logD(NotificationHelper.TAG, "No budget configured for $category in this cycle, skipping alert")
+                return
+            }
+
+            if (result.categoryAllocated > 0L) {
+                val percent = ((result.categorySpent.toDouble() / result.categoryAllocated.toDouble()) * 100).toInt()
+                if (percent >= 100) {
+                    val title = "Budget Limit Exceeded"
+                    val message = "You have exceeded your ${result.categoryName} limit (${percent}% used)."
+                    NotificationHelper.logD(NotificationHelper.TAG, "Triggering budget alert: $title — $message")
+                    notificationHelper?.showBudgetAlert(title, message)
+                } else if (percent >= 80) {
+                    val title = "Approaching Budget Limit"
+                    val message = "${result.categoryName} has reached ${percent}% of your budget limit."
+                    NotificationHelper.logD(NotificationHelper.TAG, "Triggering budget alert: $title — $message")
+                    notificationHelper?.showBudgetAlert(title, message)
+                } else {
+                    NotificationHelper.logD(NotificationHelper.TAG, "Category ${result.categoryName} spending at ${percent}% (<80%), alert not triggered")
+                }
+            } else if (result.totalMonthlyBudget > 0L) {
+                val totalPercent = ((result.totalMonthSpent.toDouble() / result.totalMonthlyBudget.toDouble()) * 100).toInt()
+                if (totalPercent >= 100) {
+                    val title = "Budget Limit Exceeded"
+                    val message = "You have exceeded your monthly budget (${totalPercent}% used)."
+                    NotificationHelper.logD(NotificationHelper.TAG, "Triggering budget alert: $title — $message")
+                    notificationHelper?.showBudgetAlert(title, message)
+                } else if (totalPercent >= 80) {
+                    val title = "Approaching Budget Limit"
+                    val message = "Monthly expenses reached ${totalPercent}% of your budget limit."
+                    NotificationHelper.logD(NotificationHelper.TAG, "Triggering budget alert: $title — $message")
+                    notificationHelper?.showBudgetAlert(title, message)
+                }
+            }
+        } catch (e: Exception) {
+            NotificationHelper.logE(NotificationHelper.TAG, "Error checking budget alert for $category: ${e.message}", e)
         }
     }
 
@@ -298,12 +358,13 @@ private data class Tuple6<A, B, C, D, E, F>(val v1: A, val v2: B, val v3: C, val
 private data class Tuple7<A, B, C, D, E, F, G>(val v1: A, val v2: B, val v3: C, val v4: D, val v5: E, val v6: F, val v7: G)
 
 class TransactionViewModelFactory(
-    private val repository: FinanceRepository
+    private val repository: FinanceRepository,
+    private val notificationHelper: NotificationHelper? = null
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionViewModel::class.java)) {
-            return TransactionViewModel(repository) as T
+            return TransactionViewModel(repository, notificationHelper) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

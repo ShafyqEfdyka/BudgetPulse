@@ -68,6 +68,7 @@ import com.example.monethra.ui.theme.getCategoryBadgeIconTint
 import com.example.monethra.ui.transactions.AddEditTransactionSheet
 import com.example.monethra.utils.CurrencyFormatter
 import com.example.monethra.utils.DateUtils
+import com.example.monethra.utils.NotificationHelper
 import com.example.monethra.viewmodel.DashboardUiState
 import com.example.monethra.viewmodel.DashboardViewModel
 import com.example.monethra.viewmodel.DashboardViewModelFactory
@@ -98,7 +99,7 @@ fun DashboardScreen(
         factory = DashboardViewModelFactory(app.financeRepository)
     )
     val transactionViewModel: TransactionViewModel = viewModel(
-        factory = TransactionViewModelFactory(app.financeRepository)
+        factory = TransactionViewModelFactory(app.financeRepository, NotificationHelper(context.applicationContext))
     )
 
     val uiState by dashboardViewModel.uiState.collectAsState()

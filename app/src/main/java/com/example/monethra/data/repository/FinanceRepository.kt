@@ -10,6 +10,7 @@ import com.example.monethra.data.entity.CategoryBudgetEntity
 import com.example.monethra.data.entity.TransactionEntity
 import com.example.monethra.data.entity.UserEntity
 import com.example.monethra.utils.DateUtils
+import java.util.Calendar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -23,6 +24,7 @@ class FinanceRepository(
     private val userDao: UserDao,
     private val userPreferencesRepository: UserPreferencesRepository
 ) {
+    val userPreferencesRepo: UserPreferencesRepository get() = userPreferencesRepository
     val activeUserId: Flow<Long> = userPreferencesRepository.activeUserId
 
     // Transactions
@@ -423,4 +425,42 @@ class FinanceRepository(
     suspend fun seedInitialDataIfEmpty() {
         // Disabled automatic initial dummy data seeding.
     }
+
+    suspend fun getCategoryBudgetSpending(category: String, date: Long): CategorySpendingResult? {
+        val cal = Calendar.getInstance().apply { timeInMillis = date }
+        val month = cal.get(Calendar.MONTH) + 1
+        val year = cal.get(Calendar.YEAR)
+
+        val paydayDay = userPreferencesRepository.paydayStartDay.first()
+        val (start, end) = DateUtils.getPaydayCycleStartAndEnd(month, year, paydayDay)
+
+        val currentUserId = activeUserId.first()
+        val transactions = transactionDao.getTransactionsByDateRange(start, end, currentUserId).first()
+        val categoryExpenses = transactions.filter {
+            it.type.equals("EXPENSE", ignoreCase = true) && it.category.equals(category, ignoreCase = true)
+        }
+        val totalCategorySpent = categoryExpenses.sumOf { it.amount }
+
+        val budget = budgetDao.getBudgetForMonth(month, year, currentUserId).first() ?: return null
+        val allocations = categoryBudgetDao.getCategoryBudgetsForBudget(budget.id).first()
+        val alloc = allocations.find { it.categoryName.equals(category, ignoreCase = true) }
+
+        val totalMonthSpent = transactions.filter { it.type.equals("EXPENSE", ignoreCase = true) }.sumOf { it.amount }
+
+        return CategorySpendingResult(
+            categoryName = category,
+            categorySpent = totalCategorySpent,
+            categoryAllocated = alloc?.allocatedAmount ?: 0L,
+            totalMonthSpent = totalMonthSpent,
+            totalMonthlyBudget = budget.totalBudget
+        )
+    }
 }
+
+data class CategorySpendingResult(
+    val categoryName: String,
+    val categorySpent: Long,
+    val categoryAllocated: Long,
+    val totalMonthSpent: Long,
+    val totalMonthlyBudget: Long
+)

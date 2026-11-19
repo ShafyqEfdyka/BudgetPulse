@@ -45,7 +45,7 @@ data class ProfileUiState(
     val currencyRate: Double = 1.0,
     val availableCurrencies: List<CurrencyModel> = emptyList(),
     val cachedRates: Map<String, Double> = emptyMap(),
-    val notificationsEnabled: Boolean = true,
+    val notificationsEnabled: Boolean = false,
     val paydayStartDay: Int = 1,
     val isLoading: Boolean = true,
     val userMessage: String? = null,
@@ -158,7 +158,7 @@ class ProfileViewModel @JvmOverloads constructor(
         repository?.themePreference?.catch { emit("SYSTEM") } ?: flowOf("SYSTEM"),
         repository?.isDarkMode?.catch { emit(false) } ?: flowOf(false),
         activeCurrencyFlow,
-        repository?.notificationsEnabled?.catch { emit(true) } ?: flowOf(true),
+        repository?.notificationsEnabled?.catch { emit(false) } ?: flowOf(false),
         repository?.paydayStartDay?.catch { emit(1) } ?: flowOf(1)
     ) { theme, isDark, currency, notifications, payday ->
         PreferencesState(
@@ -172,7 +172,7 @@ class ProfileViewModel @JvmOverloads constructor(
         )
     }
         .flowOn(ioDispatcher)
-        .catch { emit(PreferencesState("SYSTEM", false, "Rp", "IDR", 1.0, true, 1)) }
+        .catch { emit(PreferencesState("SYSTEM", false, "Rp", "IDR", 1.0, false, 1)) }
 
     private val dialogBooleans: Flow<List<Boolean>> = combine(
         listOf(
